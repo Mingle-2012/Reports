@@ -205,53 +205,60 @@ down menu to differentiate the head from the text.
             xlabel={ Recall@10 },
             ylabel={ Queries per second (1/s) },
             ymode = log,
-            xmin=0.634,
+            xmin=0.619,
+            xmax=1,
+            ymax=10^4.33,
             yticklabel style={/pgf/number format/fixed,
                               /pgf/number format/precision=3},
             legend style={font=\footnotesize, at={(0.5,-0.2)}, anchor=north},
-            cycle list name = black white
+            cycle list name = black white,
+            grid=both,
+            major grid style={line width=.2pt,draw=gray!50}, 
+            minor grid style={line width=.1pt,draw=gray!20}, 
+            minor tick num=4
             ]
             \addplot[ mark=triangle*, color=cyan, dashed] coordinates {
-                (0.63348, 17343)
+                (0.61348, 19329.5)
                 (0.8253, 16820.27)
                 (0.9683, 13820.83)
-                (0.9830, 11760.70)
-                (0.9852, 10270.64)
-                (0.9859, 8040.54)
+                (0.9830, 12517.6)
+                (0.9852, 11760.70)
+                (0.9858, 10270.64)
+                (0.9859, 10246.2)
             };
             \addlegendentry{hnswlib};
 
             \addplot[ mark=*, color=orange]  coordinates{
-                (0.61225, 20756.8)
+                (0.61429, 20756.8)
+                (0.74911, 18425.1)
                 (0.88119, 16391.5)
+                (0.94698, 14728.6)
                 (0.94861, 14701.8)
                 (0.95508, 13931)
                 (0.95518, 13095.2)
-                (0.95536, 12847.7)
+                (0.95536, 12647.7)
             };
             \addlegendentry{NNDescent};
 
             \addplot[mark=diamond*, color=olive] coordinates{
-                (0.61225, 17624.6)
-                (0.73715, 15937.3)
-                (0.85384, 13668.9)
-                (0.94708, 11777.2)
-                (0.95455, 11577.7)
-                (0.95528, 11355.2)
-                (0.95533, 10748.5)
-                (0.95541, 8122.14)
+                (0.61225, 15418.8)
+                (0.73715, 14601.8)
+                (0.85384, 13868.9)
+                (0.94708, 13090.1)
+                (0.95528, 11813.4)
+                (0.95533, 11011.7)
+                (0.95541, 10748.5)
             };
             \addlegendentry{NNMerge(S-Merge)}
             \addplot[mark=square*, color=purple]  coordinates{
                 (0.61879, 17458.7)
-                (0.74692, 15937.3)
-                (0.86689, 14257.2)
-                (0.97689, 11664.2)
-                (0.99463, 10305.1)
-                (0.99634, 9815.78)
-                (0.99746, 8833.23)
-                (0.9976, 7251.75)
-                (0.99766, 6551.93)
+                (0.74692, 16437.3)
+                (0.86689, 15257.2)
+                (0.97907, 14328.6)
+                (0.99555, 14059.2)
+                (0.99639, 12383.6)
+                (0.99762, 12235.9)
+                (0.99798, 11538.1)
             };
             \addlegendentry{RNNMerge}
 
@@ -270,9 +277,14 @@ down menu to differentiate the head from the text.
             ymode = log,
             yticklabel style={/pgf/number format/fixed,
                               /pgf/number format/precision=3},
-            xmin=0.65,
+            xmin=0.7,
+            xmax=1,
             legend style={font=\footnotesize, at={(0.5,-0.2)}, anchor=north},
-            cycle list name = black white
+            cycle list name = black white,
+            grid=both,
+            major grid style={line width=.2pt,draw=gray!50}, 
+            minor grid style={line width=.1pt,draw=gray!20}, 
+            minor tick num=4
             ]
             \addplot[ mark=triangle*, color=cyan, dashed] coordinates {
                 (0.61348, 610)
@@ -285,19 +297,21 @@ down menu to differentiate the head from the text.
             };
             \addlegendentry{hnswlib};
             \addplot[ mark=*, color=orange] coordinates{
-                (0.61225, 658.562)
+                (0.61429, 658.562)
                 (0.88119, 773.159)
                 (0.94698, 825.693)
-                (0.95486, 956.336)
-                (0.95532, 1056.77)
-                (0.95505, 1243.02)
+                (0.94861, 922.64)
+                (0.95508, 956.336)
+                (0.95518, 1056.77)
+                (0.95536, 1243.02)
             };
             \addlegendentry{NNDescent}
             \addplot[mark=diamond*, color=olive] coordinates{
-                (0.6052, 539.576)
+                (0.61225, 509.576)
                 (0.73715, 559.924)
                 (0.85384, 608.534)
                 (0.94708, 627.265)
+                (0.95528, 676.366)
                 (0.95533, 738.029)
                 (0.95541, 873.736)
             };
@@ -306,12 +320,12 @@ down menu to differentiate the head from the text.
             \addplot[mark=square*, color=purple] coordinates{
                 (0.61879, 40.8452)
                 (0.74692, 50.0325)
-                (0.97689, 112.391)
-                (0.99463, 155.841)
-                (0.99634, 187.905)
-                (0.9969, 244.845)
-                (0.99746, 326.014)
-                (0.99766, 406.716)
+                (0.86689, 67.0733)
+                (0.97907, 97.3373)
+                (0.99555, 136.586)
+                (0.99639, 175.403)
+                (0.99762, 244.845)
+                (0.99798, 326.014)
             };
             \addlegendentry{RNNMerge}
             
