@@ -1,19 +1,3 @@
-如果一个graph 有80%的点 一个有20%的点
-直接用nndescent 加sample 应该也会很快
-其实只需要更新需要update的部分 有一个flag来标记是否需要更新
-
-扫一遍 看一下每一轮的没有
-
-icde2024英伟达 两篇文章
-
-发现nndescent的连通块的数量非常多
-
-rnndescent每几轮加一次反向边
-在搜索的时候 查一下入度
-nndescent的时候 也可以查一下入度
-
-如果遇到这个问题
-
 <!-- Improved compatibility of back to top link: See: https://github.com/Mingle-2012/Reports/pull/73 -->
 <a id="readme-top"></a>
 <!--
