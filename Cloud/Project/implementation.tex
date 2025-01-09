@@ -1,0 +1,54 @@
+\section{Implementation}
+\label{sec:implementation}
+
+In this section, we present our implementation of the MapReduce framework. We first discuss the design objectives in Section~\ref{sec:design}, followed by the features of our framework in Section~\ref{sec:features}. We then describe the architecture of our framework in Section~\ref{sec:details}.
+
+\subsection{Design Objectives}
+\label{sec:design}
+
+Our implementation of the MapReduce framework aims to achieve the following Design Objectives (DOs):
+
+\begin{itemize}
+    \item \textbf{DO1: Ease of Use.} This is of prime importance, as the framework should be easy to use and require minimal configuration to run MapReduce jobs. Like Hadoop, the framework should provide several simple APIs for users to define their map and reduce functions.
+    \item \textbf{DO2: High Efficiency.} The framework should be efficient in terms of resource utilization, task scheduling, and data processing to minimize job completion time. This can be achieved by leveraging in-memory operations to minimize disk I/O overhead.
+    \item \textbf{DO3: Fault Tolerance.} The framework should be adaptive to failures, such as worker node crashes, network failures, or data corruption. It should be able to recover from such failures and continue processing the job without data loss. In other words, if a worker node fails, the master node should accurately detect the failure and be able to reassign the task to another worker node.
+    \item \textbf{DO4: Extensibility.} The framework should be able to scale efficiently across multiple nodes in a distributed environment. Users are capable of adding new worker nodes to the cluster to increase the processing capacity, dynamically adjusting the number of mappers and reducers to optimize the performance.
+\end{itemize}
+
+\subsection{Features}
+\label{sec:features}
+
+In this part, we discuss the implementation details of our MapReduce framework. 
+
+\textbf{DO1: MapReduce Interfaces.} We provide a simple and intuitive interface for users to define their map and reduce functions. Users can implement the \texttt{Mapper} and \texttt{Reducer} interfaces to define their map and reduce functions, respectively. The \texttt{Mapper} class provides a \texttt{map} method that takes an input key and value and emits intermediate key-value pairs, while the \texttt{Reducer} class provides a \texttt{reduce} method that takes an intermediate key and a list of values and emits the final output key-value pairs. To scale the framework to different types of data, both the input and output of the map and reduce functions are generic types.
+
+\textbf{DO2: Communication Framework.} We adopt the Google Remote Procedure Call (gRPC) framework for communication between the master node and the worker nodes. gRPC is a high-performance, open-source RPC framework that provides efficient communication between distributed systems, which can be used to define the service interfaces and generate client and server stubs in multiple programming languages, such as Java, Python, and Go. This allows us to easily define the communication protocol between the master node and the worker nodes and handle remote procedure calls efficiently.
+
+\textbf{DO3: Heartbeat Mechanism.} To detect worker node failures, we implement a heartbeat mechanism between the master node and the worker nodes. The worker nodes periodically send heartbeat messages to the master node to indicate that they are alive and functioning properly. If the master node does not receive a heartbeat message from a worker node within a specified timeout period, it marks the worker node as failed and reassigns its tasks to other worker nodes. This mechanism ensures fault tolerance in the MapReduce framework and allows it to recover from worker node failures.
+
+\textbf{DO4: Dynamic Scaling.} Our MapReduce framework supports dynamic scaling of the cluster by allowing users to add or remove worker nodes during the execution of a MapReduce job. When a new worker node joins the cluster, the master node detects the new node and assigns tasks to it based on the current load and task distribution. Similarly, when a worker node leaves the cluster, the master node redistributes the tasks to the remaining worker nodes to maintain load balance. This dynamic scaling capability allows the MapReduce framework to efficiently utilize the cluster resources and optimize the job performance.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=1.0\textwidth]{class}
+    \caption{Class diagram of our implemented MapReduce framework.}
+    \label{fig:class}
+\end{figure*} 
+
+\subsection{Implementation Details}
+\label{sec:details}
+
+In this part, we present the architecture of our implemented MapReduce framework. The class diagram of our framework is shown in Figure~\ref{fig:class}.
+
+As illustrated in the figure, our MapReduce framework consists of several key components:
+
+\begin{itemize}
+    \item \textbf{Master:} The Master class is responsible for coordinating and managing tasks across the system. It tracks the state of tasks via a map (tasks: Map<String, TaskInfo>), keeps track of completed parts (partsToCompletedCnt), and assigns tasks to workers. The Master is also responsible for splitting input data (splitInput) and distributing map and reduce tasks using methods like assignMapTask. Communication with workers is handled via heartbeat signals (onHeartBeatArrive) and file write completion events (onWorkerFileWriteComplete).
+    \item \textbf{Worker:} The Worker class serves as the executor of tasks assigned by the Master. Each worker communicates with the Master through its WorkerClient instance. The worker periodically sends heartbeat signals (startHeartBeating) and notifies the Master when it completes file writes or receives a new task (onTaskArrive). This ensures the Master remains aware of the worker’s status.
+    \item \textbf{Task:} The Task class serves as an abstraction for different types of MapReduce tasks. It includes details about the task (TaskInfo) and defines methods for execution (execute) and task synchronization (join). The Task class is extended by MapTask and ReduceTask to implement specific MapReduce functionality. Both of these subclasses override the core execution logic defined in the doExecute method.
+    \item \textbf{MapTask and ReduceTask:} The MapTask handles the mapping phase, utilizing a Mapper instance to process key-value pairs. It operates on input data and generates intermediate key-value pairs. The ReduceTask, on the other hand, executes the reduction phase, using a Reducer instance to aggregate values associated with each key. Methods like processReduce and processRead manage the input and output of data during the reduce phase.
+    \item \textbf{TaskInfo:} The TaskInfo class encapsulates metadata for a task, such as its unique identifier (taskId), type (taskType), input files (inputFiles), and output files (outputFiles). This class provides a structured way to manage task-related information across the system.
+    \item \textbf{WorkerService and WorkerBase:} The WorkerService class facilitates task and file-related communication with workers. It allows workers to send heartbeats (heartBeat), notify the Master of file write completions (fileWriteComplete), and send tasks. The WorkerBase class provides foundational methods for worker-related operations, including handling heartbeat arrivals (onHeartBeatArrive), task arrivals (onTaskArrive), and file write completions (onWorkerFileWriteComplete).
+    \item \textbf{FileServer and FileClient:} File operations are managed through the FileServer and FileClient classes. The FileServer supports file reads and writes, while the FileClient interacts with the FileServer to perform these operations. These components enable workers and the master to share data efficiently.
+    \item \textbf{Mapper and Reducer Interfaces:} These interfaces define the essential operations for the map and reduce phases. The Mapper interface defines a map method to process key-value pairs, while the Reducer interface defines a reduce method for aggregating values associated with keys.
+\end{itemize}

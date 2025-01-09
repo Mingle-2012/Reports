@@ -1,0 +1,28 @@
+\section{Background}
+\label{sec:background}
+
+
+
+In MapReduce model, KV pairs are the basic data structure processed by the functions, since both the input and output of the MapReduce framework are KV pairs. To apply the MapReduce model in the distributed environment, there are two kinds of processes running in the cluster: the master node and the worker nodes. The master node is responsible for scheduling tasks, monitoring the worker nodes, and managing the overall execution of the MapReduce job. The worker nodes are responsible for executing the map and reduce tasks assigned by the master node, with each worker node handling one specific task at a time. The MapReduce model adopt the divide-and-conquer principle to fairly and uniformly distribute the tasks across the cluster. To be specific, there are four main steps in the model: splitting, mapping, shuffling, and reducing. We use a toy example of the WordCount application to illustrate the MapReduce model in Figure~\ref{fig:example}. We will discuss each step in detail below.
+
+\subsection{Splitting}
+
+The input data is first divided into smaller chunks, known as input splits. Each split corresponds to a block of data stored in a distributed file system such as HDFS (Hadoop Distributed File System). These splits are processed independently by mappers, enabling parallel processing across the cluster. For example, assuming a file of 1 GB with a block size of 64 MB, the file would be split into 16 chunks, each of which is assigned to a mapper. This ensures efficient utilization of cluster resources. In our toy example, the input data is a text file containing multiple lines, which is split into individual lines and processed by the mappers.
+
+\subsection{Mapping}
+
+According to the original paper \cite{dean2008mapreduce}, the master node picks idle worker nodes and assigns them map tasks or reduce tasks, running the respective functions on the input data. These mappers first read the content of the corresponding input split, convert it into KV pairs, and apply the map function to generate intermediate KV pairs. In our toy example, each mapper reads a line of text, tokenizes it into words, and assigns a hard-coded count of $1$ to each word, since every word is counted once. Afterward, a list of KV pairs will be created where the key is nothing but the individual words and value is $1$ (e.g., \texttt{("Cloud", 1), ("Computing", 1), ("Data", 1)} for the first line). 
+
+The intermediate KV pairs are stored in memory, and periodically flushed to disk. When the latter happens, these intermediate KV pairs are partitioned into $R$ regions, where $R$ is the number of reduce tasks. Finally, the locations of these regions on the mapper's local disk are sent to the master node, which will be used to notify the reducers.
+
+\subsection{Shuffling}
+
+When a reducer is notified with the aforementioned locations of the regions, it will fetch the intermediate KV pairs from the mappers. After reading all the intermediate KV pairs, the reducer will sort them by key, so that all values associated with the same key are naturally grouped together. In our toy example, the first reducer will are responsible for processing the intermediate KV pairs with keys \texttt{"Computing"}. After sorting and shuffling, the intermediate KV pairs in the first reducer will be grouped as \texttt{("Computing", [1, 1])}.
+
+Note that if the amount of intermediate KV pairs is too large to fit in memory, the framework will spill them to disk, and the reducer will read them from disk. This is known as the \textit{external sorting} mechanism, which is crucial for handling large datasets.
+
+\subsection{Reducing}
+
+Finally, the reducer iterates over the sorted intermediate KV pairs and applies the reduce function to each unique intermediate key, allowing it to aggregate and process all values associated with that key. In our toy example, the reducer will sum up all values associated with the same key, and output the final result. For instance, the first reducer will output \texttt{("Computing", 2)} as the final result. 
+
+The output of the reducers is written to an individual file on the master node, i.e., the final result of this partition. When all map and reduce tasks are completed, the master node will notify the user that the MapReduce job has finished, and the final output is available for further processing.
