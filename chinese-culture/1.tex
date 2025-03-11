@@ -1,0 +1,364 @@
+\documentclass[UTF8,openany]{ctexbook}
+
+% 论文版面要求:
+% 统一按 word 格式A4纸（页面设置按word默认值）编排、打印、制作。
+% 正文内容字体为宋体；字号为小4号；字符间距为标准；行距为25磅(约0.88175cm)。
+
+%%%%% ===== 页面设置
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm,%
+            ]{geometry}
+\usepackage{tcolorbox}
+\usepackage{colortbl}
+\usepackage{dirtree}
+\usepackage{longtable}
+\usepackage{booktabs}
+            
+\setlength{\parindent}{2em}
+%默认的弹性间距会导致文中某些排版flush的时候，出现大量空白。
+\setlength{\parskip}{0.5em} %指定固定段后间距，默认为弹性间距。
+\setlength{\intextsep}{10pt} %固定浮浮动体前后间距。
+\usepackage{enumitem}
+\usepackage{ulem}
+
+%%%%% =====章节 标题 设置
+\ctexset{%
+  contentsname={\vspace{-3.5em}\centerline{\zihao{-3}\heiti 目\quad 录}\vspace{-0.7em}},
+  listfigurename={\vspace{-3.5em}\centerline{\zihao{-3}\heiti 插\ 图\ 目\ 录}\vspace{-0.5em}},
+  listtablename={\vspace{-3.5em}\centerline{\zihao{-3}\heiti 表\ 格\ 目\ 录}\vspace{-0.5em}},
+  bibname={\vspace{-3em}\centerline{\zihao{-3}\heiti 参\ 考\ 文\ 献}\vspace{3em}},
+  chapter={name={,},
+  number=\arabic{chapter}, %指定章序号为一二三。。。。
+  nameformat={\zihao{-2}\bfseries},
+  titleformat={\zihao{-2}\bfseries},
+  format=\raggedright,
+  beforeskip={10pt},
+  afterskip={10pt},
+  pagestyle={fancy}
+  },
+section={format=\raggedright,
+  nameformat={\zihao{4}\bfseries},
+  titleformat={\zihao{4}\bfseries},
+%           afterskip={1ex plus 0.2ex}
+  beforeskip={1ex},% 固定段前段后间距，
+  afterskip={1ex}
+  },
+subsection={format=\raggedright,
+  nameformat={\zihao{-4}\bfseries},
+  titleformat={\zihao{-4}\bfseries},
+%           afterskip={0.5ex plus 0.1ex}
+  beforeskip={0.5ex},
+  afterskip={0.5ex}
+  }
+}
+\AddToHook{package/xeCJK/after}{\defaultCJKfontfeatures{}} % 重置字体设置
+%%%%% ===== 中英文字体
+%\setsansfont{Myriad Pro} % 无衬线字体 sans serif \sffamily
+%\setmonofont{Consolas}   % 等宽字体 typewriter \ttfamily
+%\newcommand{\Times}{\fontspec{Times New Roman}}
+%% 中文字体
+%\setCJKmainfont[BoldFont={Microsoft YaHei},ItalicFont={KaiTi}]{NSimSun}
+%\setCJKsansfont{Microsoft YaHei}
+%\setCJKmonofont{KaiTi}
+% \setCJKfamilyfont{STSong}{方正小标宋_GBK}\newcommand{\STSong}{\CJKfamily{STSong}}
+\setCJKfamilyfont{songti}{STZhongsong}\newcommand{\STSong}{\CJKfamily{STSong}}
+
+%%%%% ===== 常用宏包
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}
+\usepackage{graphicx,xcolor,float}
+\usepackage{fancyhdr}
+\usepackage{tocloft} % 设置目录中的条目间距
+
+
+\renewcommand\cftdot{\textsubscript{……}}
+\renewcommand\cftdotsep{0}
+
+\setlength{\cftbeforechapskip}{1pt}
+\renewcommand{\cftchapleader}{\cftdotfill{\cdot}}
+
+
+\usepackage{booktabs} % toprule, midrule, bottomrule
+\usepackage{varwidth} % 可变宽度的 parbox
+
+%%%%% ===== 参考文献与链接
+\usepackage[numbers,sort&compress,sectionbib,super, square]{natbib} %引用上标，禁用连续缩写。
+\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
+
+
+\usepackage[xetex,pagebackref]{hyperref}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+	        bookmarksopen=true,breaklinks=true}
+	        
+	        
+	        
+\iffalse   % 调试时，可去掉，以用于显示引用位置。
+\renewcommand*{\backrefalt}[4]{%
+\ifcase #1 No citations.%
+\or Cited on page #2.%
+\else Cited on pages #2.%
+%\else #1 Cited on pages #2.%
+\fi
+}
+
+\else
+\renewcommand*{\backrefalt}[4]{}
+\fi
+
+%%%%% ===== 浮动图表的标题
+\usepackage[margin=2em,labelsep=space,skip=0.5em,font=normalfont]{caption}
+\DeclareCaptionFormat{mycaption}{{\heiti\color{blue} #1}#2{\kaishu #3}}
+\captionsetup{format=mycaption,tablewithin=chapter,figurewithin=chapter}%,belowskip=-10pt
+%\setlength{\belowcaptionskip}{-10pt}
+
+%%%%%% ===== 浮动图表的比例默认50%以下，否则无法浮动。
+\renewcommand\floatpagefraction{.9} %当浮动体小于页面90%时进行直接放置。
+\renewcommand\topfraction{.9}  
+\renewcommand\bottomfraction{.9}  
+\renewcommand\textfraction{.1}
+
+
+
+%%%%% ===== 算法
+\usepackage{algorithm,algpseudocode}
+
+%%%%% ===== 其他
+\usepackage{ulem}
+\def\ULthickness{1pt}
+
+
+
+
+%%%%%===== Code Style代码
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\usepackage{accsupp}
+
+
+
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+
+\lstset{
+    % language = C,
+    showstringspaces=false,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle=\emptyaccsupp,
+    numbersep = 14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	% frame = shadowbox, % 用(带影子效果)方框框住代码块
+	frame = single, % 用(带影子效果)方框框住代码块
+	showspaces = false, % 不显示空格
+	columns = fixed, % 字间距固定
+  framesep=1em
+} 
+\lstset{
+    sensitive=true,
+    moreemph={ASSERT, NULL}, emphstyle=\color{red}\bfseries,
+    moreemph=[2]{int64_t, uint32_t, tid_t, uint8_t, int16_t, uint16_t, int32_t, size_t}, emphstyle=[2]\color{purple}\bfseries,
+    showspaces = false, % 不显示空格
+    }
+
+
+
+\newcommand{\mcc}[1]{\multicolumn{1}{c}{\underline{\makebox[10em][c]{#1}}}}
+\newcommand{\mce}[1]{\multicolumn{1}{c}{\underline{\makebox[15em][l]{#1}}}}
+
+
+\pagestyle{fancy}
+\fancyhf{}  % 清除以前对页眉页脚的设置
+
+\newcommand{\makeheadrule}{%% 定义页眉与正文间双隔线
+    \makebox[0pt][l]{\rule[.7\baselineskip]{\headwidth}{0.3pt}}%0.4
+    \rule[0.85\baselineskip]{\headwidth}{1.0pt}\vskip-.8\baselineskip}
+\makeatletter
+\renewcommand{\headrule}{%
+    % {\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi\makeheadrule}}
+    {\makeheadrule}}
+\makeatother
+\renewcommand{\chaptermark}[1]{\markboth{\CTEXthechapter \ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection \ #1}{}}
+%\fancyhead[RO,LE]{{\small\songti\rightmark}}     % 节标题
+%\fancyhead[RE]{{\small\songti\leftmark}}      % 章标题
+\fancyhead[C]{《中国文化通论》课程期末论文}
+% \fancyhead[RO,LE]{$\cdot$ {\small\thepage} $\cdot$}
+\fancyfoot[C]{{-\thepage-}}
+%\fancyfoot[CO,CE]{{\thepage}}
+
+\ctexset{chapter/break={}}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+
+        {
+            \begin{figure}[H]
+                \vspace{5cm}
+                \includegraphics[width=14cm]{img/0.png}
+            \end{figure}
+            \heiti\zihao{2}《中国文化通论》课程期末论文\\
+            \vspace{1.8em}
+            
+        }
+        
+        \zihao{-3}
+        \begin{tabular}{p{0cm}p{0em}@{\extracolsep{0.5ex}}cc}
+            ~ & \hfill             &  & \mcc{武泽恺\quad 10225101429}      \\
+        \end{tabular}
+        \\[8em]
+        \zihao{-2}2024年6月
+    \end{center}
+    \thispagestyle{fancy}
+    \fancyfoot[C]{}
+\end{titlepage}
+\fancyfoot[C]{-\thepage-}
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+
+\thispagestyle{fancy}
+\newpage
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+\begin{center}
+  \large \textbf{无字碑歌} \cite{ref1}
+\end{center}
+
+万岁通天元年的长夏，磅礴大雨从阴霾沉沉的天空中倾盆而下，重叠的雨幕遮住了视线，为整个洛阳城披上一层深邃的神秘面纱。地上的雨水横流，洗涤着唐王朝百年的历史尘埃与痕迹，等待着新的篇章被书写。
+
+整个庞大的唐帝国仿佛都在这场突如其来的大雨中按下了暂停键。洛阳城内失去了往日的人声鼎沸，取而代之的是纷乱的雨声，充斥着神都的每一个角落。但是，唯有一处却灯火通明，弦歌不辍——明堂。
+
+明堂的大门高耸入云，两侧有雄伟的金狮镇守，金色的外表在雨水的冲刷下显得格外明亮。大门虚掩着，龙脑香的气息混杂着有序的人声从门缝中渗出，被无限放大着。象征着皇帝无上权力的宝座高居大殿中央，金制的椅背和典型的须弥座底，让皇帝的形象尊贵而神格化，座上空无一人。不同于前朝或现唐以往皇帝的金銮宝殿，宝座后面并非常见的雕龙髹金屏风，取而代之的是一尊夹纻佛像，其体型之巨大，手尚可容纳数十人。整个明堂，是当今女皇武则天集各国君臣聚钱亿万，买尽天下铜铁，历时一年有余，终于建成。\cite{ref2}
+
+想必御台旁站着的就是武则天了，一代天骄女皇，虽已年过古稀，满头华发下是未老的容颜，眼里炯炯有神。即使是九五之尊，或许脱去紫金凤袍后看上去与宫人无异。此时的她，正静候一个人的到来。
+
+这是六年里第七十四次听取经义讲授，武则天暗自思忖道。
+
+即位以来，她下诏规定佛教列于道教之上，僧尼位于道士女冠之前。尊佛拜佛，以佛训政，翻译佛典，教化万方。每月月初，她都会请名寺方丈前来明堂，为她亲自讲授佛法。法藏是明堂的常客，也是武则天深深敬仰的大师，钦定“贤首国师“。
+
+武则天在她的人生中第一次接触佛学，已经是一甲子之前的事情了。其母亲杨氏和隋朝宗室算的上是血缘近亲，隋朝历代君主笃信佛家，杨氏也是如此。从小，武则天随母亲听取讲经，探求佛法，拜佛烧香，抄录经文。抄录的经文主要以《兜沙经》、《法华经》为主。杨氏还曾于家中设立佛堂，供拜观音，收纳佛经，筑架以藏。故武则天深受母亲所带来的佛教洗礼影响。\cite{ref2}她的父亲武士彟深受杨氏影响，对释家佛道逐渐熟悉入迷。士彟还曾与唐太宗李世民一同在长沙寺拜阿育王像。家庭的熏陶让她有更多的机会接触到佛学，也在她的内心之中种下了深深的情愫。在她进入宫闱之前，曾一度有出家为尼的想法。
+
+陛下，贤首国师到了。传话的内侍推开了偏殿的侧门，两眼望向地面疾步走来。
+
+宣。
+
+宣贤首国师上殿。内侍面朝正南方，提高了嗓音。
+
+身披袈裟，手持禅杖，一长者从偏门入，徐徐走来。其步伐沉稳而有力，混杂着渐弱的雨声，周围的一切都变得宁静而庄严。其目光深邃，就好像，能够洞察世间的一切。
+
+武则天所等之人名曰法藏，乃华严宗始祖。华严宗乃大乘佛教一大宗派，因尊《华严经》为最高经典得名，武则天正是大乘佛教的信仰者，更是华严宗的虔诚信徒。\cite{ref4}
+
+就在上一次，法藏为武则天说明了真如本体，讲述了无生无灭。无生无灭讲求世间万物都不会自然合而生，亦不会自然归于无，一切不过是本体所产生的幻象。
+
+皇权也是如此。当上大唐的天后也好，革唐代周的女皇也罢，不过是冕旒一顶，凤袍一件，不过是繁华过眼，红尘一梦，不过是流光一瞬，空幻如烟。珍馐美味，荣华富贵，生杀予夺，陟罚臧否，都是皇权所带来的现象罢了。
+只是，在追求皇权的道路上，武则天已经付出太多了。四十年前的一个雨夜，王皇后登门拜访，看望武则天刚刚诞下不久的女儿。王皇后离去后，得知皇帝很快赶来，不肯错过任何一个良机的她狠下心来，亲手掐住亲生女儿的脖子，待到女儿没有呼吸，她不敢看女儿一眼，只是又慢慢盖上了被子。等到皇帝发现女儿已经不在人世时，嫁祸王皇后杀死了她。\cite{ref5}
+
+那一夜，她哭了，哭的很孤独，没有任何人知道。窗外狂风咆哮着，灯笼急速地摇晃着，地面上充满了红色的碎片。王皇后得废，武则天顺利上位，长孙无忌为首的陇西望族失去靠山，最大的门阀得以肃清，最大的对手得以消灭，再也没有人能够阻止她，她需要做的只是再往前迈一步。她知道，彻底踏上了追逐皇权的道路，每一步都会充满了血与泪，在这条满是悲哀的路上，首先要学会独自撑伞——即使风雨再大，也要前进，前进。 
+
+老衲今日为陛下讲解六相。\cite{ref6}
+
+思绪，即使是千丝万缕，最终也飘回了这里。法藏落座。
+
+所谓六相，乃事物之六类相状。
+
+总相，别相，同相，异相，成相与坏相。吾辈之修行可以六相分之，凡世间所有之事物，亦不过如此六类相状。一切缘起之现象，也具足六相。六相彼此圆融无碍，是曰六相圆融。
+
+大师所说，不甚理解。
+
+老衲仍以殿外金狮为比，为陛下阐述其中之道。
+
+陛下请看，狮子是总相，即视整个狮子为一整体，名为总相。
+
+就是说这整个狮子本身是总相。
+
+陛下说的是。而五根差别是别相。即狮子之五官差异，名曰别相。
+
+也就是说狮子的各部分是别相。
+
+陛下所言极是。而共从一缘起是同相。即狮子之五官皆是因缘而生起狮子，是各部分的共同之处，名曰同相。
+
+那么各部分因缘而合，因合而成，是同相。
+
+陛下解读的是。而眼、耳等不相滥是异相。即狮子之五官各不相同，是各部分的差异之处，名曰异相。
+
+各部分又不相同，所以叫异相。
+
+正是。而诸根合会有狮子是成相。即狮子之五官共同组合形成狮子，是部分组合而形成整体，故名曰成相。
+
+因缘形成一个事物，是成相。
+
+陛下说的是。而诸根各住自位是坏相。即狮子之五官各自独立，各守其位，不为整体，是故名曰坏相。
+
+各部分始终分离，所以叫做坏相。
+
+正是。是以“六相圆融”者，乃诸法之真理，世间万象之精髓。老衲以金狮作比，狮之总相，统摄全局，正如陛下之于国家，代天巡狩，一统四方。狮之五官，各具别相，正如百官之于陛下，各司其职，各有所长。狮之五官虽异，然共由狮体所生，此乃同相，正如百官之于国家，皆为国之栋梁，共辅国事。五官各不尽相同，各有其用，是为异相，正如百官之于大周，各守其位，不相逾越。狮之五官，共成狮形，此乃成相，正如万民之于国家，万民和谐，百官协作，方能国泰民安。五官各守其位，不相混淆，为坏相之体现，此坏非真坏，正如百官万民各有所守，各安其分，国家之基始得稳固。
+
+老衲以为，六者相互依存，相互制约，圆融无碍，共构狮之全体，此乃“六相圆融”之真谛。若以此观天下，则万物皆备此六相，圆融无碍，和谐共生，此乃天地之道也。
+
+世间万象，皆如金狮。大师之言，深入浅出，朕受益匪浅。
+
+武则天最感触的还是佛家的包容。世间一切万物可以六相化之，那么天下人看来水火不容的儒释道三家，也可以有圆融一体的契机。对于儒家黄老之学，如果定要有个高低喜恶之分，她更倾向道家。道家讲求道法自然，无为而治，顺天时而为，她的许多政策无不取自其中之道。
+
+反观儒学，甚至有一丝厌恶之情。儒家的三从四德，早已筹划好了每一个女人的终生。儒家强调男尊女卑，不许妇人与闻国政，\cite{ref3}注定了武则天要通过非常人的手段来得到权力。一人侍奉唐太宗、唐高宗二主，亲手杀死女儿，武则天是一个十足的狠人，更是一个争强好胜的人。儒家越不让她做什么，她就一定拼足了勇气去挑战那不可逾越的底线。即便如此，在崇佛的同时，道教和儒教也没有被过分的贬低。因为佛法使然，普渡万生的大乘哲理，造就了武则天强大的包容心。儒释道乃世间万物之一，亦可以六相化之。在尊重六相俱存的基础上，寻求六相共同点和互补之处，不正是法藏所表达的哲理吗？
+
+朕观天下，百官各有其职，各守其位，共辅朕躬，以成国家之繁荣。朕当以总相之心，统御四方，以别相之智，选拔贤能，以同相之情，凝聚人心，以异相之明，洞察秋毫，以成相之力，致国家发展，以坏相之定，使秩序井然。六相圆融，和谐共生。朕当以此为鉴，谋国家之盛世，成万世之基业。
+
+殿外雨渐歇。微风拂过，湿土的气息涌入明堂。雨洼中浮起金狮子的流光，比任何以往都更加闪亮。
+
+大乘佛法培养了武则天博大的胸怀。她深知她的天下，不是她和门阀贵族的天下，而是天下人的天下。
+
+五十多年的参政与执政生涯里，武则天开科举，启殿试，得以有君子满朝；减赋税，兴农桑，使百姓安居乐业；扬佛法，倡慈悲，万国来华取佛经；安边疆，御敌寇，护佑国土安宁。选贤举能，政治清明；农业繁盛，国富民强；普及教育，文化昌盛；拓展外交，修好万邦。今日之大周，远胜昔日贞观之大唐。
+
+今日去西安还能参观唐高宗李治与武则天合葬的乾陵。陵前并立着两块巨大的石碑，西侧的一块名曰述圣碑，黑漆碑面，字填金粉，光彩照人。这是武则天为高宗歌功颂德而立的碑，她还亲自撰写了数千字的碑文。 
+
+东侧的是武则天的无字碑。无字碑正如其名所说一般，一字皆无。
+
+有人说，她认为文字无法完全表达她的功德。
+
+也有人说，她自知罪孽深重，无言以对天下人。
+
+一切功过交由后人评说。
+
+\newpage
+
+\begin{thebibliography}{1}
+
+	\bibitem{ref1}
+	文章标题参考影视作品, {\it{无字碑歌：武则天传}}. 陈燕民(导演), 张文华(编剧), 李忆嘉(编剧), 2006.
+
+  \bibitem{ref2}
+  李, 金松. 述学校笺. {\it{中国历史文集丛刊}}. 中华书局, 北京, 2014.
+
+  \bibitem{ref3}
+	陈寅恪, {\it{金明馆丛稿二编}}. 上海古籍出版社, 上海, 2020.
+
+  \bibitem{ref4}
+	张祥龙, {\it{拒秦兴汉和应对佛教的儒家哲学：从董仲舒到陆象山}}. 广西师范大学出版社, 桂林, 2012.
+
+  \bibitem{ref5}
+  胡戟, {\it{武则天本传}}. 北京大学出版社, 北京, 2011.
+
+  \bibitem{ref6}
+	方立天释译, 星云大师监修, {\it{华严金师子章}}. 东方出版社, 北京, 2016.
+
+  
+  
+
+\end{thebibliography}
+
+\end{document}
