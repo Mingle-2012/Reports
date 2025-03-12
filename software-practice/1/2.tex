@@ -1,0 +1,67 @@
+\documentclass[UTF8, fontset=windows]{article}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage[UTF8, nocap]{ctex}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\geometry{a4paper, margin=1in}
+
+\title{\textbf{移动应用功能自动化测试现状报告}}
+\author{第七组 \\ 
+李鹏达 10225101460 \\
+张耘彪 10225101437 \\
+武泽恺 10225101429
+}
+\date{2025年3月11日}
+
+\begin{document}
+\maketitle
+
+\section{什么是移动应用自动化测试}
+
+自动化测试，就是让我们写一段程序去测试另一段程序是否正常的过程，自动化测试可以更加省力的替代一部分的手动操作，它是一种把以人为驱动的测试行为转化为机器执行的一种过程。而移动应用功能自动化测试，也就是区别于pc端的移动端的应用自动化测试，目前研究的无非三类，安卓端，苹果端和新兴的鸿蒙端。目前对于移动端的测试主要在功能方面的测试外，还需要覆盖到非功能方面的测试。
+
+\section{论文解读与分析}
+
+\subsection{DroidBot: A Lightweight UI-Guided Test Input Generator for Android}
+
+这篇论文介绍了DroidBot，一个轻量级的、基于UI引导的Android应用测试输入生成工具，专注于移动应用的功能自动化测试。DroidBot的核心原理是通过运行时动态构建的状态转移模型来生成UI引导的测试输入，而不需要对应用或系统进行插桩。它通过Android内置的调试工具（如UI Automator和Hierarchy Viewer）实时监控应用的UI状态和进程信息，并基于这些信息生成状态转移图。每个节点代表一个设备状态，边代表触发状态转移的输入事件。DroidBot默认采用深度优先的探索策略生成测试输入，同时也允许用户自定义策略或集成其他算法。这种设计使得DroidBot能够在无需插桩的情况下，兼容几乎所有的Android设备和应用，特别适用于兼容性测试和恶意软件分析等场景。通过方法追踪和敏感行为监控，DroidBot还能量化测试输入的有效性，帮助评估测试覆盖率和发现潜在的安全问题。  
+
+\subsection{General and Practical Property-based Testing for Android Apps}
+
+这篇论文提出了一种基于属性测试（Property-based Testing, PBT）的移动应用功能自动化测试技术，旨在解决Android应用中的非崩溃性功能错误。其核心原理是通过设计一种灵活的属性描述语言（PDL），允许测试人员以前置条件、交互场景和后置条件的形式指定应用功能的预期行为，并结合随机探索和主路径引导探索两种策略自动生成输入事件序列，驱动应用进入不同状态并验证属性是否满足。随机探索通过生成随机事件广泛探索应用状态空间，而主路径引导探索则利用用户指定的主路径来引导测试，增加到达目标功能状态的概率。通过这种方式，Kea工具能够有效发现应用中的功能错误，显著优于现有的自动化测试工具。
+
+\subsection{Testing the Limits: Unusual Text Inputs Generation for Mobile App Crash Detection with Large Language Model}
+
+这篇论文提出了InputBlaster，一种基于大语言模型的自动化工具，用于生成异常文本输入以检测移动应用中的崩溃问题。其核心原理是通过LLM生成测试生成器，每个生成器能够根据相同的变异规则生成一批异常文本输入。具体来说， InputBlaster 首先利用LLM生成能够通过GUI页面的有效输入，然后基于这些有效输入，LLM生成变异规则并生成测试生成器，最后通过上下文学习机制，结合在线问题报告和历史运行记录中的示例，进一步提升生成效果。通过这种方式， InputBlaster 能够生成多样化的异常输入，覆盖文本输入控件的各种约束和上下文语义信息，从而有效触发应用崩溃。实验表明， InputBlaster 在36个文本输入控件上的崩溃检测率达到78\%，显著优于现有的18种基线方法，并在实际应用中发现了37个新的崩溃问题。
+
+\subsection{Fill in the Blank: Context-aware Automated Text Input Generation for Mobile GUI Testing}
+
+这篇论文提出了一种名为QTypist的自动化文本输入生成方法，旨在解决移动应用GUI测试中文本输入生成的难题。QTypist基于预训练的大语言模型，通过提取GUI页面的上下文信息，设计语言模式生成提示，并将这些提示输入到LLM中以生成符合语义的文本输入。其核心原理是将文本输入生成问题转化为填空式问答任务，利用LLM的强大语义理解能力，结合自动化构建的提示-答案对进行模型调优，从而提升生成文本的准确性和多样性。通过这种方式，QTypist显著提高了自动化测试工具的覆盖率，帮助发现更多潜在的错误。
+
+\subsection{Make LLM a Testing Expert: Bringing Human-like Interaction to Mobile GUI Testing via Functionality-aware Decisions}
+
+这篇论文提出了一种名为GPTDroid的自动化GUI测试工具，旨在通过大语言模型生成类似人类操作的测试脚本，从而更全面、有效地测试移动应用。GPTDroid将GUI测试问题转化为问答任务，通过提取当前GUI页面的上下文信息，并将其编码为自然语言提示输入到LLM中，生成可执行的测试操作。为了克服LLM在测试过程中可能陷入局部或低层次语义的困境，GPTDroid设计了功能感知的记忆机制，记录测试过程中的交互信息，并通过功能级别的提示帮助LLM进行全局推理，生成有意义的功能性操作序列。实验结果表明，GPTDroid在93个流行的Android应用中实现了75\%的活动覆盖率和66\%的代码覆盖率，比现有最佳基线分别高出32\%和20\%，并且能够检测出更多的崩溃错误。其核心原理在于通过LLM的语义理解和上下文感知能力，结合功能感知的记忆机制，生成符合应用业务逻辑的测试操作序列，从而提升测试覆盖率和错误检测能力。
+
+\subsection{Prompting Is All You Need: Automated Android Bug Replay with Large Language Models}
+
+这篇论文提出了一种名为AdbGPT的轻量级方法，利用大语言模型通过提示工程自动复现Android应用中的Bug。AdbGPT的核心原理是通过少量示例学习和链式思维推理，引导LLMs从Bug报告中提取步骤到复现（S2R）实体，并根据当前GUI状态动态指导Bug复现。该方法首先通过提示LLMs理解Bug报告中的动作类型、目标组件和输入值等实体，然后结合GUI编码算法将GUI状态转化为LLMs可理解的文本，进一步提示LLMs生成操作步骤以触发Bug。实验表明，AdbGPT在Bug复现的准确性和效率上优于现有方法，且无需大量训练数据或硬编码模式，显著提升了移动应用功能自动化测试的能力。
+
+
+\section{移动应用自动化测试的发展}
+
+移动应用自动化测试总的来说还是一个比较新兴的领域。大致在2007年以前，那时候智能手机还没有普及，所以移动应用的功能相对比较简单，测试主要依赖测试员的手动测试。在2007-2010年，随着 iPhone 和 Android 的推出，移动应用进入快速发展期，自动化测试需求增加。早期的自动化测试工具如 Android 端的 MonkeyRunner 和ios端的 UI Automation 出现，主要用于模拟用户操作和界面测试。这个时候的工具功能比较基础，脚本的编写比较复杂，并且覆盖率较为有限。随后的五年间，自动化测试框架逐渐成熟，2012年发布的Appium成为了跨平台测试的主流工具，它使用了WebDriver,同时支持ios和 Android 。其他的测试工具例如Android端的Espresso和ios端的XCUITest也相继推出，它们提供了更高效的本地化测试支持。还有一些持续集成工具例如Jenkins开始与自动化测试结合，使得测试效率大幅提升。之后的云测试平台如AWS Device Farm、Firebase Test Lab等的兴起，使得开发者可以在云端进行大规模设备兼容性测试。而随着人工智能和机器学习技术的引入，使得自动化测试更加智能化，也就是第二部分所解读的后四篇论文相关的大语言模型结合移动应用自动化测试的成果。
+
+\section{移动应用自动化测试的现状}
+
+移动应用自动化测试领域目前正处于快速发展阶段，研究热点包括UI引导的测试输入生成、基于属性的测试（PBT）、大语言模型（LLM）的应用以及上下文感知的文本输入生成等技术方向。UI引导的测试工具（如DroidBot）通过动态构建状态转移模型，生成高效的测试输入，适用于兼容性测试和安全分析；基于属性的测试通过定义功能属性并生成输入事件序列，有效检测非崩溃性功能错误；LLM驱动的工具（如InputBlaster、QTypist、GPTDroid）利用大语言模型的语义理解和生成能力，在异常输入生成、文本输入生成、测试脚本生成和Bug复现等方面表现出色，显著提升了测试覆盖率和错误检测能力。上下文感知的文本输入生成技术则通过提取GUI上下文信息，生成符合语义的输入，填补了文本输入测试的空白。我们的kea工具代表了基于属性测试在Android应用测试中的前沿应用，原本的DroidBot专注于通过UI引导的测试输入生成，动态构建状态转移模型，广泛探索应用的状态，而Kea专注于基于属性测试，通过定义功能属性并结合随机探索和主路径引导探索，发现Android应用中的非崩溃性功能错误，提供了相较于DroidBot更深入的功能验证能力。在本学期的课程中，我们希望通过学习参考几篇LLM相关的论文，通过优化完善kea的LLM policy来实现真正又宽又广的自动化测试。
+
+
+\end{document}
