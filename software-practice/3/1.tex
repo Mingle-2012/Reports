@@ -1,0 +1,332 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage{listings}
+\usepackage[a4paper, body={18cm,22cm}]{geometry}
+\usepackage{amsmath,amssymb,amstext,wasysym,enumerate,graphicx}
+\usepackage{float,abstract,booktabs,indentfirst,amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+\usepackage{accsupp}
+\usepackage[bottom]{footmisc}
+\usepackage{subcaption}
+% \usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage[xetex]{hyperref}
+\usepackage{fontspec}
+\usetikzlibrary{arrows.meta}
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+\setlength{\parindent}{2em}
+\setmonofont{Consolas}
+\setCJKmonofont{黑体}
+% \setmainfont{Times New Roman}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+            bookmarksopen=true,breaklinks=true}
+\lstset{
+    % language = C,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle = \small\emptyaccsupp, % 行号字体
+    numbersep = -14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	frame = single, 
+	showspaces = false, % 不显示空格
+    showstringspaces = false,
+	columns = fixed, % 字间距固定
+    literate=
+        {^-}{{{\color{black}\textbf{\color{red}-}}\colorbox{red!30}{\phantom{XX}}}}{1}
+        {^+}{{{\color{black}\textbf{\color{green}+}}\colorbox{green!30}{\phantom{XX}}}}{1},
+}
+
+\raggedbottom
+
+\title{\heiti\textbf{第三阶段报告}}
+\author{第七组 \\ 
+李鹏达 10225101460 \\
+张耘彪 10225101437 \\
+武泽恺 10225101429
+}
+\date{2025年5月6日}
+
+\begin{document}
+\maketitle
+
+\renewcommand\arraystretch{1.4}
+
+\section{背景介绍}
+
+在前两个阶段中，我们运行了K{\small\MakeUppercase{ea}}的大语言模型引导的逃离UI陷阱策略，并从源代码层面分析了其实现。经过分析，我们发现了两个主要问题：1）\textbf{原有的大模型引导逃离策略所生成的操作序列准确性较低}；2）\textbf{缺乏有效的错误处理机制}。为了解决这两个问题，我们提出了一个新的基于大模型的逃离UI陷阱策略。该策略基于\textit{四级提示工程}，通过将一个问题拆解为多个步骤、逐渐引导提问，从而减少细节丢失，并模拟人
+类思维，进而优化大语言模型的输出；同时引入了错误处理机制，以确保在遇到无效操作
+时，系统能够及时调整探索策略，重新询问大模型来生成新的操作序列。
+
+然而，经过实验验证，我们发现该策略在效率上仍然存在不足之处。首先，我们所提出来的新策略\textbf{沿用了原有的相似度比较方式来判断是否进入了UI陷阱}。然而，原有的相似度比较方案基于OpenCV，通过计算两张图片的哈希值来判断相似度，并根据一个$Threshold$来决定是否进入了UI陷阱。然而，我们通过实验发现，不同的应用程序往往具有不同的UI设计风格和布局，因此相同的UI元素在不同应用程序中的哈希值可能会有很大的差异，这导致不同的应用程序有着不同的最佳$Threshold$值。原有的相似度比较方案在不同应用程序中表现不佳，导致了产生了误报和漏报，这一点在之前的周报中也有所说明。相似度判断的不准确，也进一步影响了大语言模型所驱动策略的整体表现。例如，误报可能诱导大语言模型生成不必要的操作序列，导致时间与资源的浪费，从而降低整体系统的运行效率与响应准确性。
+
+\begin{lstlisting}[language=python, caption=相似度计算代码]
+    def calculate_similarity(fileA, fileB):
+        imgA = cv2.imread(fileA)
+        imgB = cv2.imread(fileB)
+        hashA = Similarity.dhash(imgA)
+        hashB = Similarity.dhash(imgB)
+        similarity_score = 1 - Similarity.hamming_distance(hashA, hashB) / 64.0 
+        return similarity_score
+\end{lstlisting}
+
+同时，我们发现我们\textbf{所提出的新策略仍然会有一些不准确的情况}。例如，在一些情况下，大语言模型可能会生成一些不必要的操作序列。这是因为我们在设计Prompt时，要求大模型给出一系列操作序列以逃离UI陷阱，但大语言模型在处理操作语义时难以充分理解各个操作之间的上下文关系及其对UI状态的实际影响，因此可能会生成一些不必要的操作序列。在实际中的某些情况下，操作序列中的某些操作已经足够让测试脚本离开UI陷阱。因此，模型可能会在已足以脱离UI陷阱的基础上，继续生成多余操作，会浪费一定的时间和资源。
+
+因此，我们认为我们之前的工作仍然存在一些不足之处。我们在本阶段的工作中，主要是对之前的工作进行了一些改进和优化。同时，我们也简单介绍了第三阶段任务中的路径多样化度量设计部分的工作。
+
+\section{本阶段我们的工作量}
+
+在本阶段中，我们的工作量主要集中在以下几个方面：
+
+\begin{enumerate}
+    \item \textbf{对原有的相似度计算方案进行改进}。我们在原有的相似度计算方案的基础上，重新提出了一种新的相似度计算方案。我们认为XML树结构能够更好地反映UI状态的语义信息和层次关系，因此可以通过对比两个UI状态的XML树结构，来判断两个UI状态是否相似。
+    \item \textbf{对\textit{四级提示工程}进行优化}。我们在原有的\textit{四级提示工程}的基础上，优化了整个工程的流程。我们将原有的\textit{四级提示工程}中的步骤进行简化，并通过循环迭代的方式来逐步引导大语言模型生成操作序列，从而模拟人类操作的思维过程。
+\end{enumerate}
+
+对于路径多样化度量设计部分，我们已经有了设计方案并编写了代码。然而，由于时间原因，我们还没有进行实验验证，因此在本报告中没有展示该部分的工作。我们将在答辩前的时间继续完善该部分的工作。
+
+\section{基于XML的相似度计算方案}
+
+我们在原有的相似度计算方案的基础上，重新提出了一种新的相似度计算方案。我们认为XML树结构能够更好地反映UI状态的语义信息和层次关系，因此可以通过对比两个UI状态的XML树结构，来判断两个UI状态是否相似。为此，我们将XML树结构进行简化，将 XML 树抽象成只包含 tag 和 children 的轻量结构（\textit{SimpleNode}），便于对结构相似性进行对比。
+
+\begin{lstlisting}[language=python, caption=构建XML树结构]
+    class SimpleNode:
+        def __init__(self, tag):
+            self.tag = tag
+            self.children = []
+
+    def build_simple_tree(elem):
+        node = SimpleNode(elem.tag)
+        for child in elem:
+            node.children.append(build_simple_tree(child))
+        return node
+\end{lstlisting}
+
+我们通过递归的方式来遍历 XML 树结构，并将每个节点的 tag 和 children 存储在 SimpleNode 中。我们定义了一个比较函数 compare\_simple\_trees 来计算两个 XML 树结构之间的相似度。该函数会递归对比两棵简单树的节点，每次匹配成功就增加 score，每次比较都会增加 total。同时，额外加上子节点数量差异补偿，使得树结构相差较大的页面相似度更低。最后，我们将 score 除以 total，得到相似度分数。
+
+\begin{lstlisting}[language=python, caption=相似度计算]
+    def compare_simple_trees(n1, n2):
+        if n1 is None and n2 is None:
+            return (0, 0)
+        if n1 is None or n2 is None:
+            return (0, 1)
+
+        score = 0
+        total = 1
+
+        if n1.tag == n2.tag:
+            score += 1
+
+        children1 = n1.children
+        children2 = n2.children
+        for c1, c2 in zip(children1, children2):
+            s, t = compare_simple_trees(c1, c2)
+            score += s
+            total += t
+
+        total += abs(len(children1) - len(children2))
+        return (score, total)
+
+    def compare_xml_strings(xml_str1, xml_str2):
+        try:
+            root1 = ET.fromstring(xml_str1)
+            root2 = ET.fromstring(xml_str2)
+        except ET.ParseError as e:
+            raise ValueError(f"XML Parse Error: {e}")
+
+        tree1 = build_simple_tree(root1)
+        tree2 = build_simple_tree(root2)
+        score, total = compare_simple_trees(tree1, tree2)
+
+        if total == 0:
+            return 100.0
+        similarity = (score / total) * 100
+        return round(similarity, 2)
+\end{lstlisting}
+
+我们这里采用了启发式的原则，使用我们的相似度判断方法时，连续三次相似度达到90，会返回 True，说明此时测试脚本已经陷入循环或死页面，需要触发我们策略里面的大模型引导逃离UI陷阱策略。我们在后续的实验中发现，这种方法在不同的应用程序中表现良好，能够有效地判断UI状态之间的相似度。
+
+\begin{lstlisting}[language=python, caption=相似度检测]
+    class Similarity(object):
+        def __init__(self) -> None:
+            self.sim_count = 0
+
+        def detect(self, xml1: str, xml2: str):
+            res = compare_xml_strings(xml1, xml2)
+            if res > 90:
+                self.sim_count += 1
+                if self.sim_count >= 3:
+                    self.sim_count = 0
+                    return True
+            else:
+                self.sim_count = 0
+            return False
+\end{lstlisting}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pic}
+    \caption{基于循环的提示工程设计}
+    \label{fig:flow}
+\end{figure}
+
+\section{基于循环的提示工程设计}
+
+\subsection{概述}
+
+在原有的\textit{四级提示工程}中，我们将一个问题拆解为多个步骤、逐渐引导提问，从而减少细节丢失，并模拟人类思维，从而优化大语言模型生成操作序列的效果。我们在原有的\textit{四级提示工程}的基础上，优化了整个工程的流程，形成了\textit{基于循环的提示工程}。
+
+具体来说，我们将提示工程优化为了三个阶段：1）\textbf{意图理解阶段}；2）\textbf{操作描述阶段}；3）\textbf{迭代生成阶段}。流程图如图\ref{fig:flow}所示。
+
+\subsection{意图理解阶段}
+
+这一阶段与上一阶段的报告中的\textit{意图理解阶段}相同。在这一阶段，我们将获取到的 XML 结构作为上下文输入到大语言模型中，要求其理解当前界面的意图和功能。借助提示词 meaning\_prompt，我们可以引导模型生成对当前界面的描述。获取到模型对当前界面结构的理解后，我们可以更好地引导模型生成后续的操作序列。
+
+\newpage
+
+\begin{lstlisting}[language=python, caption=意图理解]
+    prompt = f"""This is an XML representation of an Android application page:
+    {get_xml(self.device.u2)}
+    Please describe the purpose of this page in the most concise language possible."""
+\end{lstlisting}
+
+\subsection{操作描述阶段}
+
+在这一阶段，我们根据之前的上下文信息，向大语言模型提出新的要求——要求其生成一个完整任务流程的描述，从而引导模型一步步生成事件。
+
+我们设计了一个提示词 describe\_prompt，用于引导大语言模型基于当前UI页面生成一个用户可能执行的新操作。该提示词明确要求模型仅描述一个尚未生成的任务，并补充执行该任务所需的具体步骤，从而在一定程度上避免了重复。此外，提示中加入了当前已生成任务的列表，进一步实现了去重，引导模型从\textbf{用户视角}出发进行交互意图推理。
+
+\begin{lstlisting}[language=python, caption=操作描述]
+    prompt = f"""If you were the user, what would you do on this page? You can only describe one action. 
+    Please try to generate tasks that have not been generated before. Below are the tasks that have already been generated:
+    {list(self._generated_tasks)}
+    Please list the steps required to complete this action. (This action will be named 'The Task')"""
+\end{lstlisting}
+
+\subsection{迭代生成阶段}
+
+在这个阶段中，我们将大语言模型生成的操作描述作为输入，不断要求模型生成新的操作序列。我们设计了两个提示词 action\_prompt 和 action\_prompt\_prime，分别用于引导模型生成操作序列的第一步和后续步骤。
+
+在 action\_prompt 中，我们引导大语言模型将用户操作步骤以结构化的 JSON 格式进行表达，以便于后续被程序解析与执行。该提示词强调只描述“用户刚刚执行的操作的第一步”，并提供了统一的格式规范和字段说明，如 action、selectors、inputText 和 hasNext。其中，selectors 用于精确定位页面元素，支持多种常见属性组合（如 resourceId 与 text），并要求所有值必须可在对应的 UI XML 中找到，以确保操作的可执行性与准确性。此外，通过布尔值 hasNext，我们可以判断是否还有后续操作需要生成。
+
+\begin{lstlisting}[language=python, caption=初始事件生成]
+    prompt = """Please describe the **first step** of the operation you just performed in JSON format, as shown below:
+    {
+        "action": "input_text",
+        "selectors": {"resourceId": "com.example:id/input", "text": "password"},
+        "inputText": "123456",
+        "hasNext": true
+    }
+    Notes:
+    - The "action" must be one of: click, long_click, input_text, press_enter
+    - "selectors" can only include: **text**, **className**, **description**, **resourceId**, and must be in camelCase. You can not use other selectors.
+    - The value is the value of the selector, which must be found in the previous XML
+    - "inputText" is the text to input, only present when the action is input_text
+    - "hasNext" is a boolean indicating whether there is a next step. Set it to false if there is no next step
+    Try to combine multiple selectors to uniquely identify the element.
+    Please return the operation in JSON format only. Do not explain or use code blocks.
+    """
+\end{lstlisting}
+
+在 action\_prompt\_prime 中，我们引导大语言模型在给定当前页面状态的基础上，继续生成前一个操作的“下一步”操作。该提示词通过动态插入最新的页面 XML 状态，确保模型具备当前 UI 上下文，从而做出合理的操作。
+
+\begin{lstlisting}[language=python, caption=后续事件生成]
+    prompt = f"""Now, the current state of the page is as follows: {get_xml(self.device.u2)}
+    Please describe the **next step** of the operation you just performed in JSON format, using the same format as above.
+    """
+\end{lstlisting}
+
+在生成操作序列后，我们还需要对生成的操作进行检查，以确保其符合要求。我们设计了一个提示词 check\_prompt，用于引导大语言模型检查生成的操作是否符合要求。该提示词要求模型检查生成的操作是否符合以下两个条件：1）选择器必须在 XML 中找到；2）选择器必须唯一标识元素。如果没有问题，则按原样输出；否则，修改相应内容。
+
+\begin{lstlisting}[language=python, caption=操作检查]
+    prompt = """Please check whether the operation or sequence of operations you just generated meets the requirements:
+    - The selectors must be found in the XML.
+    - The selectors must uniquely identify the element.
+    If there are no issues, output it as is; otherwise, modify it accordingly.
+    """
+\end{lstlisting}
+
+\subsection{事件生成函数}
+
+我们所实现的LLMPolicy重写了事件生成函数 generate\_llm\_event。一般情况下，该函数会先进入意图理解阶段、操作描述阶段，并调用action\_prompt生成第一个事件，根据hasNext来判断是否有后续事件生成。如果有，则进入迭代生成阶段，调用 action\_prompt\_prime 生成下一步操作。每次都会调用 check\_prompt 检查生成的操作，并返回 U2Event 对象。
+
+\begin{lstlisting}[language=python, caption=LLM事件生成]
+    def generate_llm_event(self):
+        if self._in_llm:
+            self.action_prompt_prime()
+            self.llm()
+            self.check_prompt()
+            act = Action(**json.loads(str(self.llm().content)))
+            self._in_llm = act.hasNext
+            return U2Event(act)
+        self._messages = []
+        self.meaning_prompt()
+        self.llm()
+        self.describe_prompt()
+        res = self.llm().content
+        self._generated_tasks.add(res.split('\n')[0])
+        self.action_prompt()
+        self.llm()
+        self.check_prompt()
+        act = Action(**json.loads(self.llm().content))
+        self._in_llm = act.hasNext
+        return U2Event(act)
+\end{lstlisting}
+
+我们在实验过程中发现有些时候待测应用程序并不在前台运行，这也会导致应用卡死在UI陷阱。然而，Kea原有的唤醒机制似乎并不能很好地解决这个问题。为了解决这个问题，我们在事件生成函数中添加了一个新的函数 move\_if\_need。该函数会检查当前应用程序是否在前台运行，如果不在，则尝试将其唤醒到前台。
+
+首先，我们通过 get\_top() 检查当前前台应用是否为目标应用，若不一致，则根据当前所处界面执行相应操作：若处于桌面（即 Nexus Launcher），直接重启目标应用；否则增加 \_out\_cnt 计数，当连续多次不在目标应用中时，尝试先返回一次界面并重新检查；若仍未进入目标应用，则强制关闭当前前台应用或目标应用自身后重新启动，确保测试过程始终在正确的应用上下文中执行，并重置相关状态变量。
+
+\begin{lstlisting}[language=python, caption=唤起应用]
+    def get_top(self):
+        res = self.device.adb.shell("dumpsys activity top | grep ACTIVITY")
+        package_names = re.findall(r'ACTIVITY\s+([^\s/]+)/', res)
+        return package_names[-1]
+
+    def move_if_need(self):
+        top = self.get_top()
+        if (top) != self.app.get_package_name():
+            self._in_llm = False
+            self._llm_cnt = 0
+            if (top == 'com.google.android.apps.nexuslauncher'):
+                self.device.adb.shell(self.app.get_start_intent().get_cmd())
+                return
+            self._out_cnt += 1
+            if self._out_cnt > 2:
+                self._out_cnt = 0
+                self.device.u2.press("BACK")
+                time.sleep(1)
+                top = self.get_top()
+                if top != self.app.get_package_name():
+                    if (top != 'com.google.android.apps.nexuslauncher'):
+                        self.device.adb.shell("am force-stop %s" % top)
+                    time.sleep(1)
+                    top = self.get_top()
+                    if top != self.app.get_package_name():
+                        self.device.adb.shell("am force-stop %s" % self.app.get_package_name())
+                        self.device.adb.shell(self.app.get_start_intent().get_cmd())
+        else:
+            self._out_cnt = 0
+\end{lstlisting}
+
+\section{实验}
+
+我们将具体的实验结果展示在\textit{实验报告}中。
+
+\section{总结}
+
+本周我们对之前的工作进行了改进和优化。我们提出了一种新的相似度计算方案，基于XML树结构来判断UI状态之间的相似度。我们还对原有的\textit{四级提示工程}进行了优化，通过循环迭代的方式来逐步引导大语言模型生成操作序列。小规模实验结果在一定程度上表明，我们的方法在处理 UI 陷阱时，表现优于现有的随机路径引导策略以及原有的大模型路径引导策略。
+
+\end{document}
