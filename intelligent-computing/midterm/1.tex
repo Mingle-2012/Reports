@@ -1,0 +1,323 @@
+\documentclass[UTF8,openany]{ctexbook}
+
+% 论文版面要求:
+% 统一按 word 格式A4纸（页面设置按word默认值）编排、打印、制作。
+% 正文内容字体为宋体；字号为小4号；字符间距为标准；行距为25磅(约0.88175cm)。
+
+%%%%% ===== 页面设置
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm,%
+            ]{geometry}
+\usepackage{tcolorbox}
+\usepackage{colortbl}
+\usepackage{dirtree}
+\usepackage{longtable}
+\usepackage{booktabs}
+            
+\setlength{\parindent}{2em}
+%默认的弹性间距会导致文中某些排版flush的时候，出现大量空白。
+\setlength{\parskip}{0.5em} %指定固定段后间距，默认为弹性间距。
+\setlength{\intextsep}{10pt} %固定浮浮动体前后间距。
+\usepackage{enumitem}
+\usepackage{ulem}
+
+%%%%% =====章节 标题 设置
+\ctexset{%
+  contentsname={\vspace{-3.5em}\centerline{\zihao{-3}\heiti 目\quad 录}\vspace{-0.7em}},
+  listfigurename={\vspace{-3.5em}\centerline{\zihao{-3}\heiti 插\ 图\ 目\ 录}\vspace{-0.5em}},
+  listtablename={\vspace{-3.5em}\centerline{\zihao{-3}\heiti 表\ 格\ 目\ 录}\vspace{-0.5em}},
+  bibname={\vspace{-3em}\centerline{\zihao{-3}\heiti 参\ 考\ 文\ 献}\vspace{3em}},
+  chapter={name={,},
+  number=\arabic{chapter}, %指定章序号为一二三。。。。
+  nameformat={\zihao{-2}\bfseries},
+  titleformat={\zihao{-2}\bfseries},
+  format=\raggedright,
+  beforeskip={10pt},
+  afterskip={10pt},
+  pagestyle={fancy}
+  },
+section={format=\raggedright,
+  nameformat={\zihao{4}\bfseries},
+  titleformat={\zihao{4}\bfseries},
+%           afterskip={1ex plus 0.2ex}
+  beforeskip={1ex},% 固定段前段后间距，
+  afterskip={1ex}
+  },
+subsection={format=\raggedright,
+  nameformat={\zihao{-4}\bfseries},
+  titleformat={\zihao{-4}\bfseries},
+%           afterskip={0.5ex plus 0.1ex}
+  beforeskip={0.5ex},
+  afterskip={0.5ex}
+  }
+}
+\AddToHook{package/xeCJK/after}{\defaultCJKfontfeatures{}} % 重置字体设置
+%%%%% ===== 中英文字体
+%\setsansfont{Myriad Pro} % 无衬线字体 sans serif \sffamily
+%\setmonofont{Consolas}   % 等宽字体 typewriter \ttfamily
+%\newcommand{\Times}{\fontspec{Times New Roman}}
+%% 中文字体
+%\setCJKmainfont[BoldFont={Microsoft YaHei},ItalicFont={KaiTi}]{NSimSun}
+%\setCJKsansfont{Microsoft YaHei}
+%\setCJKmonofont{KaiTi}
+% \setCJKfamilyfont{STSong}{方正小标宋_GBK}\newcommand{\STSong}{\CJKfamily{STSong}}
+\setCJKfamilyfont{songti}{STZhongsong}\newcommand{\STSong}{\CJKfamily{STSong}}
+
+%%%%% ===== 常用宏包
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}
+\usepackage{graphicx,xcolor,float}
+\usepackage{fancyhdr}
+\usepackage{tocloft} % 设置目录中的条目间距
+
+\graphicspath{{img/}}
+
+\renewcommand\cftdot{\textsubscript{……}}
+\renewcommand\cftdotsep{0}
+
+\setlength{\cftbeforechapskip}{1pt}
+\renewcommand{\cftchapleader}{\cftdotfill{\cdot}}
+
+
+\usepackage{booktabs} % toprule, midrule, bottomrule
+\usepackage{varwidth} % 可变宽度的 parbox
+
+%%%%% ===== 参考文献与链接
+\usepackage[numbers,sort&compress,sectionbib,super, square]{natbib} %引用上标，禁用连续缩写。
+\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
+
+
+\usepackage[xetex,pagebackref]{hyperref}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+	        bookmarksopen=true,breaklinks=true}
+	        
+	        
+	        
+\iffalse   % 调试时，可去掉，以用于显示引用位置。
+\renewcommand*{\backrefalt}[4]{%
+\ifcase #1 No citations.%
+\or Cited on page #2.%
+\else Cited on pages #2.%
+%\else #1 Cited on pages #2.%
+\fi
+}
+
+\else
+\renewcommand*{\backrefalt}[4]{}
+\fi
+
+%%%%% ===== 浮动图表的标题
+\usepackage[margin=2em,labelsep=space,skip=0.5em,font=normalfont]{caption}
+\DeclareCaptionFormat{mycaption}{{\heiti\color{blue} #1}#2{\kaishu #3}}
+\captionsetup{format=mycaption,tablewithin=chapter,figurewithin=chapter}%,belowskip=-10pt
+%\setlength{\belowcaptionskip}{-10pt}
+
+%%%%%% ===== 浮动图表的比例默认50%以下，否则无法浮动。
+\renewcommand\floatpagefraction{.9} %当浮动体小于页面90%时进行直接放置。
+\renewcommand\topfraction{.9}  
+\renewcommand\bottomfraction{.9}  
+\renewcommand\textfraction{.1}
+
+
+
+%%%%% ===== 算法
+\usepackage{algorithm,algpseudocode}
+
+%%%%% ===== 其他
+\usepackage{ulem}
+\def\ULthickness{1pt}
+
+
+
+
+%%%%%===== Code Style代码
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\usepackage{accsupp}
+
+
+
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+
+\lstset{
+    % language = C,
+    showstringspaces=false,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle=\emptyaccsupp,
+    numbersep = 14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	% frame = shadowbox, % 用(带影子效果)方框框住代码块
+	frame = single, % 用(带影子效果)方框框住代码块
+	showspaces = false, % 不显示空格
+	columns = fixed, % 字间距固定
+  framesep=1em
+} 
+\lstset{
+    sensitive=true,
+    moreemph={ASSERT, NULL}, emphstyle=\color{red}\bfseries,
+    moreemph=[2]{int64_t, uint32_t, tid_t, uint8_t, int16_t, uint16_t, int32_t, size_t}, emphstyle=[2]\color{purple}\bfseries,
+    showspaces = false, % 不显示空格
+    }
+
+
+
+\newcommand{\mcc}[1]{\multicolumn{1}{c}{\underline{\makebox[10em][c]{#1}}}}
+\newcommand{\mce}[1]{\multicolumn{1}{c}{\underline{\makebox[15em][l]{#1}}}}
+
+
+\pagestyle{fancy}
+\fancyhf{}  % 清除以前对页眉页脚的设置
+
+\newcommand{\makeheadrule}{%% 定义页眉与正文间双隔线
+    \makebox[0pt][l]{\rule[.7\baselineskip]{\headwidth}{0.3pt}}%0.4
+    \rule[0.85\baselineskip]{\headwidth}{1.0pt}\vskip-.8\baselineskip}
+\makeatletter
+\renewcommand{\headrule}{%
+    % {\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi\makeheadrule}}
+    {\makeheadrule}}
+\makeatother
+\renewcommand{\chaptermark}[1]{\markboth{\CTEXthechapter \ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection \ #1}{}}
+%\fancyhead[RO,LE]{{\small\songti\rightmark}}     % 节标题
+%\fancyhead[RE]{{\small\songti\leftmark}}      % 章标题
+\fancyhead[C]{《智能计算系统》课程期中项目报告}
+% \fancyhead[RO,LE]{$\cdot$ {\small\thepage} $\cdot$}
+\fancyfoot[C]{{-\thepage-}}
+%\fancyfoot[CO,CE]{{\thepage}}
+
+\ctexset{chapter/break={}}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+
+        {
+            \begin{figure}[H]
+                \vspace{5cm}
+                \includegraphics[width=14cm]{0.png}
+            \end{figure}
+            \heiti\zihao{2}《智能计算系统》课程期中项目报告\\
+            \vspace{1.8em}
+            
+        }
+        
+        \zihao{-3}
+        \begin{tabular}{p{0cm}p{0em}@{\extracolsep{0.5ex}}cc}
+            ~ & \hfill             &  & \mcc{武泽恺\quad 10225101429}      \\
+        \end{tabular}
+        \\[8em]
+        \zihao{-2}2025年5月
+    \end{center}
+    \thispagestyle{fancy}
+    \fancyfoot[C]{}
+\end{titlepage}
+\fancyfoot[C]{-\thepage-}
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+
+\thispagestyle{fancy}
+\newpage
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+\begin{center}
+    \zihao{-2}\heiti 图像风格迁移任务
+\end{center}
+
+\chapter{实验概述}
+
+\section{实验目的}
+
+图像风格迁移根据给定的目标风格图像和目标内容图像求解风格迁移图像，使风格迁移图像在风格上与目标风格图像一致，在内容上与目标内容图像一致。
+
+本实验的目的是通过掌握深度学习的训练方法，实现风格迁移模型的训练。一般的风格迁移任务在进行训练时，首先输入图像到图像转换网络生成风格化图像，再利用特征提取网络计算内容损失和风格损失，然后迭代地更新图像转换网络生成风格化图像，再利用特征提取网络计算内容损失和风格损失，然后迭代地更新图像转换网络的参数以最小化损失。
+
+\section{实验内容}
+
+根据实验教程，运用 Imagenet 数据集训练出一个能实现风格迁移的模型（目标风格图像类型可以自选），并输出该模型的内容损失 $content\_loss$ 或风格重建损失 $style\_loss$，同时给出对图像进行风格迁移的时间 $delta\_time$，根据指标作为评判标准。
+
+\section{实验要求}
+
+\begin{enumerate}
+    \item 风格迁移时间不得过长。
+    \item 需要提交一份实验报告，不少于 3 页，内容包括：所使用的神经网络模型详情、所使用的模型中的亮点、最终风格迁移过程中的损失值。
+\end{enumerate}
+
+\chapter{实验过程}
+
+我们首先在\textsection\ref{sec:dataset}中介绍数据集的准备工作，然后在\textsection\ref{sec:env}中介绍实验环境的配置，接着在\textsection\ref{sec:model}中介绍我们所采用的模型。
+
+\section{数据集准备}
+\label{sec:dataset}
+
+风格迁移任务需要准备内容图像数据集和风格图像数据集。根据实验要求，我们采用了 Imagenet~\cite{deng2009imagenet} 作为内容图像数据集，包含了多种类型的图像。然而，由于原始的 Imagenet 数据集十分庞大，本次实验所使用的设备条件可能无法承受高强度的训练，因此我们采用了 Kaggle 上开源的 Imagenet (mini)~\footnote{\url{https://www.kaggle.com/datasets/ifigotin/imagenetmini-1000}} 数据集，即使用从原始的Imagenet数据集中采样的小型数据集来进行训练。对于风格数据集，我们采用了开源的动漫风格数据集 Shinkai~\cite{Liu2024dtgan}，该数据集包含了新海诚的电影《君の名は。》中的大量动漫风格图像。具体信息如表~\ref{tab:dataset}所示。
+
+\begin{table}[H]
+    \centering
+    \caption{数据集信息}
+    \label{tab:dataset}
+    \begin{tabular}{ccccc}
+        \toprule
+        数据集名称 & 数据集类型 & 数据集大小 & 图片数量 & 来源 \\ \midrule
+        Imagenet~\cite{deng2009imagenet}  & 混合 & 3.48 GB & 34745 & Kaggle   \\
+        Shinkai~\cite{Liu2024dtgan}  & 动漫 & 137 MB & 1445 & Github  \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{实验环境}
+\label{sec:env}
+
+本实验中，我们使用 PyTorch 框架在具备 GPU 加速的环境下进行风格迁移模型的训练。具体实验环境配置如表~\ref{tab:env}所示。
+
+\begin{table}[H]
+    \centering
+    \caption{实验环境配置}
+    \label{tab:env}
+    \begin{tabular}{cc}
+        \toprule
+        环境配置项 & 配置值 \\ \midrule
+        操作系统 & Ubuntu 22.04 LTS \\
+        CPU 型号 & Intel(R) Core(TM) i7-12700H CPU @ 2.30GHz \\
+        RAM 大小 & 32 GB \\
+        Python 版本 & 3.9.21 \\
+        PyTorch 版本 & 2.7.0+cu118 \\
+        torchvision 版本 & 0.22.0+cu118 \\
+        CUDA 版本 & 11.5 \\
+        GPU 型号 & NVIDIA GeForce RTX 3070ti, 显存 8GB \\
+        NVIDIA 驱动版本 & 561.19 \\ 
+        开发环境 & Visual Studio Code \\ 
+        主要依赖库 & numpy, visdom, tqdm \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{模型训练}
+\label{sec:model}
+
+
+
+
+\chapter{实验结果}
+
+
+\chapter{实验总结}
+
+\bibliographystyle{plain}
+\bibliography{reference}
+
+\end{document}

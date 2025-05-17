@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\begin{document}
+
+\begin{algorithm}
+\caption{Main Exploration Loop}
+\begin{algorithmic}[1]
+\Function{Start}{$\text{input\_manager}$}
+  \State $count \gets 0$
+  \While{$count < max\_event\_count$}
+    \State Update UI state and snapshots
+    \State Start the APP if essential
+      \If{LLM mode is active}
+        \If{Continuing LLM Sequence}
+          \State Build Next Action Prompt
+          \State $response \gets$ CallLLM()
+          \State $response \gets$ ValiditByLLM()
+          \State $act \gets$ ParseAction(response)
+        \Else
+          \State Build Meaning Prompt
+          \State $r_1 \gets$ CallLLM()
+          \State Build Task Prompt
+          \State $r_2 \gets$ CallLLM()
+          \State Build First Action Prompt
+          \State $r_3 \gets$ CallLLM()
+          \State $response \gets$ ValiditByLLM()
+          \State $act \gets$ ParseAction($r_3$)
+        \EndIf
+        \State Set LLM Mode to $act.hasNext$
+        \State $event \gets$ WrapAsU2Event($act$)
+      \ElsIf{Detect($last\_state\_xml$, $current\_state\_xml$)}
+        \State Activate LLM Mode
+        \State Follow same steps as above to generate $event$
+      \Else
+        \State $event \gets$ RandomGenerate(from\_state)
+        \EndIf
+    \State Execute($event$)
+    \State $count \gets count + 1$
+  \EndWhile
+  \State Clean up and exit
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}

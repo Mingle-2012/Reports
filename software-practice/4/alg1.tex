@@ -1,0 +1,214 @@
+
+\documentclass[
+	letterpaper, % Paper size, specify a4paper (A4) or letterpaper (US letter)
+	10pt, % Default font size, specify 10pt, 11pt or 12pt
+]{article} % Document class
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+
+\title{Determination of the Atomic \\ Weight of Magnesium \\ CHEM 101}
+
+\author{Michael \textsc{Slackenerny}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+	\begin{tabular}{l r}
+		Date Performed: & February 13, 2022 \\
+		Partners: & Cecilia \textsc{Smith} \\
+		& Tajel \textsc{Khumalo} \\
+		Instructor: & Professor \textsc{Rivera}
+	\end{tabular}
+\end{center}
+
+\begin{algorithm}
+\caption{Detect}
+\begin{algorithmic}[1]
+\Function{Detect}{$xml_1$, $xml_2$, $threshold$}
+    \State $similarity$ $\gets$ \Call{CompareXML}{$xml_1$, $xml_2$}
+    \If{$similarity$ $>$ 90}
+    \State $sim\_count$ $\gets$ $sim\_count$ + 1
+    \If{$sim\_count$ $\geq$ $threshold$}
+        \State $sim\_count$ $\gets$ 0
+        \State \Return \textbf{True}
+    \EndIf
+\EndIf
+\State \Return \textbf{False}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{CompareXML}
+\begin{algorithmic}[1]
+\Function{CompareXML}{$xml_1$, $xml_2$}
+    \State $tree_1, tree_2 \gets$ Simplify $xml_1$, $xml_2$ and construct trees
+    \State $score, total \gets \Call{CompareTree}{tree_1, tree_2}$
+    \State \Return $100.0$ if $total = 0$ else $(score / total) \times 100$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Main Exploration Loop}
+\begin{algorithmic}[1]
+\Function{Start}{$\text{input\_manager}$}
+  \State $count \gets 0$
+  \While{$count < max\_event\_count$}
+    \State Update UI state and snapshots
+    \State Start the APP if essential
+      \If{LLM mode is active}
+        \If{Continuing LLM Sequence}
+          \State Build Next Action Prompt
+          \State $response \gets$ CallLLM()
+          \State $response \gets$ ValiditByLLM()
+          \State $act \gets$ ParseAction(response)
+        \Else
+          \State Build Meaning Prompt
+          \State $r_1 \gets$ CallLLM()
+          \State Build Task Prompt
+          \State $r_2 \gets$ CallLLM()
+          \State Build First Action Prompt
+          \State $r_3 \gets$ CallLLM()
+          \State $response \gets$ ValiditByLLM()
+          \State $act \gets$ ParseAction($r_3$)
+        \EndIf
+        \State Set LLM Mode to $act.hasNext$
+        \State $event \gets$ WrapAsU2Event($act$)
+      \ElsIf{Detect($last\_state\_xml$, $current\_state\_xml$)}
+        \State Activate LLM Mode
+        \State Follow same steps as above to generate $event$
+      \Else
+        \State $event \gets$ RandomGenerate(from\_state)
+        \EndIf
+    \State Execute($event$)
+    \State $count \gets count + 1$
+  \EndWhile
+  \State Clean up and exit
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Frequency-aware random exploration strategy}
+\begin{algorithmic}[1]
+\State $s \gets$ current state
+\If{$s \notin input\_table$}
+    \State $possible\_events \gets \Call{GetPossibleInputs}{s}$
+    \State Initialize $input\_table[s]$ with an empty \texttt{events} list
+    \ForAll{$event \in possible\_events$}
+        \State Add $event$ to $input\_table[s].events$
+        \If{$event \notin event\_table$}
+            \State $event\_table[event] \gets$ 0
+        \EndIf
+    \EndFor
+\EndIf
+    \State $counts$ $\gets$ $\emptyset$
+    \ForAll{$event \in input\_table[s].events$}
+        \State $counts[event] \gets event\_table[event].tried$
+    \EndFor
+    \State $weights \gets$ \Call{GetWeights}{$input\_table[s].events$, $counts$}
+    \State $selected\_event \gets$ randomly select one event from the list using $weights$
+    \State Increment $event\_table[selected\_event].tried$
+    \State \Return $selected\_event$
+\end{algorithmic}
+\end{algorithm}
+
+
+\[
+w_i = w_0 \cdot \gamma^{c_i}
+\]
+
+\[
+P(e_i) = \frac{w_i}{\sum_{j=1}^{n} w_j} = \frac{\gamma^{c_i}}{\sum_{j=1}^{n} \gamma^{c_j}}
+\]
+
+\begin{table}[ht]
+\centering
+\caption{Summary of Selected Open-Source Android Applications}
+\label{tab:app-dataset}
+\begin{tabular}{@{}llll@{}}
+\toprule
+App Name    & Primary Feature        & GitHub Stars & Installations \\ 
+\midrule
+AnkiDroid   & Flashcards Manager     & 9.5K         & 10M–50M       \\
+Feeder      & RSS Feed Reader        & 2.1K         & 100K–500K     \\
+Newpipe     & YouTube Client         & 33.8K        & 1M–5M         \\
+OmniNotes   & Note Manager           & 2.7K         & 10M–50M       \\
+Wikipedia   & Encyclopedia Reader    & 3K           & 10M–50M       \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{algorithm}[H]
+\caption{Move App to Foreground}
+\label{alg:move-app}
+\begin{algorithmic}[1]
+\Function{MoveIfNeed}{}
+    \State $top \gets$ current foreground app
+    \If{$top \ne$ target app}
+        \State $out\_cnt \gets out\_cnt + 1$
+        \If{$out\_cnt > threshold$}
+            \State $out\_cnt \gets 0$
+            \State simulate back navigation
+            \State recheck $top$
+            \If{$top \ne$ target app}
+                \State force-stop $top$ and recheck $top$
+                \If{$top \ne$ target app}
+                    \State force-stop and restart target app
+                \EndIf
+            \EndIf
+        \EndIf
+    \Else
+        \State $out\_cnt \gets 0$
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{table}[ht]\small
+\centering
+\begin{tabular}{lcccccccccc}
+\toprule
+\multirow{2}{*}{App name} 
+& \multicolumn{3}{c}{\# of UTG States} 
+& \multicolumn{3}{c}{\# of UTG Events} 
+& \multicolumn{3}{c}{Activity Coverage} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& Random & Ours & Difference 
+& Random & Ours & Difference 
+& Random & Ours & Difference \\
+\midrule
+Omninotes & 232.67 & \cellcolor{gray!15}261.67 & \cellcolor{gray!25}+12.46\% 
+          & 496.00 & \cellcolor{gray!15}525.33 & \cellcolor{gray!25}+5.91\%
+          & 0.378 & \cellcolor{gray!15}0.422 & \cellcolor{gray!25}+11.76\% \\
+AnkiDroid & 293.67 & \cellcolor{gray!15}309.00 & \cellcolor{gray!25}+5.22\% 
+          & 517.00 & \cellcolor{gray!15}573.33 & \cellcolor{gray!25}+10.90\% 
+          & 0.427 & \cellcolor{gray!15}0.438 & \cellcolor{gray!25}+2.44\% \\
+Feeder    & 169.33 & \cellcolor{gray!15}128.67 & \cellcolor{gray!25}-24.02\% 
+          & 344.00 & \cellcolor{gray!15}393.67 & \cellcolor{gray!25}+14.44\% 
+          & 0.185 & \cellcolor{gray!15}0.259 & \cellcolor{gray!25}+40.00\% \\
+Newpipe   & 367.67 & \cellcolor{gray!15}455.67 & \cellcolor{gray!25}+23.93\% 
+          & 601.67 & \cellcolor{gray!15}625.00 & \cellcolor{gray!25}+3.88\% 
+          & 0.238 & \cellcolor{gray!15}0.333 & \cellcolor{gray!25}+40.00\% \\
+Wikipedia & 327.33 & \cellcolor{gray!15}412.00 & \cellcolor{gray!25}+25.87\% 
+          & 605.67 & \cellcolor{gray!15}704.67 & \cellcolor{gray!25}+16.35\% 
+          & 0.307 & \cellcolor{gray!15}0.333 & \cellcolor{gray!25}+8.47\% \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of random strategy and our method on various apps}
+\end{table}
+
+\end{document}

@@ -1,0 +1,51 @@
+
+\documentclass[
+	letterpaper, % Paper size, specify a4paper (A4) or letterpaper (US letter)
+	10pt, % Default font size, specify 10pt, 11pt or 12pt
+]{article} % Document class
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\title{Determination of the Atomic \\ Weight of Magnesium \\ CHEM 101}
+
+\author{Michael \textsc{Slackenerny}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+	\begin{tabular}{l r}
+		Date Performed: & February 13, 2022 \\
+		Partners: & Cecilia \textsc{Smith} \\
+		& Tajel \textsc{Khumalo} \\
+		Instructor: & Professor \textsc{Rivera}
+	\end{tabular}
+\end{center}
+
+\begin{algorithm}
+\caption{Event Selection Based on Current UI State}
+\begin{algorithmic}[1]
+\State $s \gets$ current UI state
+\If{$s$ not in the input table, or has fewer than two events, or chosen probabilistically}
+    \State Retrieve possible user inputs from state $s$
+    \While{no input is available and retry count not exceeded}
+        \State Wait briefly and refresh the current state
+        \State Attempt to extract possible inputs again
+    \EndWhile
+    \State Add fallback events such as \textsc{Back} or screen rotation (if enabled)
+    \State Mark the current interaction as an exploration step
+    \State Initialize event list and metadata for state $s$
+    \ForAll{input events from state $s$}
+        \State Add event to the input table and, if unseen, to the global event registry
+    \EndFor
+    \State For each event, assign a score based on trial history or fixed heuristic
+    \State Use weighted sampling to select an event
+    \State Increment trial count for the selected event
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}
