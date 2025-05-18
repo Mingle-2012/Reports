@@ -12,6 +12,7 @@
 \usepackage{dirtree}
 \usepackage{longtable}
 \usepackage{booktabs}
+\usepackage{subfigure}
             
 \setlength{\parindent}{2em}
 %默认的弹性间距会导致文中某些排版flush的时候，出现大量空白。
@@ -67,15 +68,8 @@ subsection={format=\raggedright,
 \usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}
 \usepackage{graphicx,xcolor,float}
 \usepackage{fancyhdr}
-\usepackage{tocloft} % 设置目录中的条目间距
 
 \graphicspath{{img/}}
-
-\renewcommand\cftdot{\textsubscript{……}}
-\renewcommand\cftdotsep{0}
-
-\setlength{\cftbeforechapskip}{1pt}
-\renewcommand{\cftchapleader}{\cftdotfill{\cdot}}
 
 
 \usepackage{booktabs} % toprule, midrule, bottomrule
@@ -342,6 +336,8 @@ subsection={format=\raggedright,
     \label{eq:adain}
 \end{equation}
 
+其中，$x$ 是内容图像的特征，$y$ 是风格图像的特征，$\mu(x)$ 和 $\sigma(x)$ 分别是内容图像特征的均值和标准差，$\mu(y)$ 和 $\sigma(y)$ 分别是风格图像特征的均值和标准差。
+
 \subsection{解码器}
 
 解码器基于逐层恢复的思想，通过反复卷积和上采样操作，逐步增强图像细节。这一部分负责将经过AdaIN处理后的特征恢复为完整的图像，由多个卷积层和上采样层组成，通过逐步还原特征图的空间信息，最终生成与输入图像相同尺寸的输出图像。
@@ -350,7 +346,7 @@ subsection={format=\raggedright,
 
 在本实验中，我们使用了两种损失函数来评估生成图像的质量：内容损失和风格损失。
 
-\begin{itemize}
+\begin{itemize}[nosep]
     \item \textbf{内容损失}：通过计算生成图像与内容图像在编码器特征空间中的差异，来保持图像的内容结构。内容损失使用均方误差（MSE）来度量内容图像与生成图像在VGG19最后一层特征的差异。
     \item \textbf{风格损失}：通过计算生成图像和风格图像在多个中间层（relu1\_1, relu2\_1，relu3\_1, relu4\_1）上的特征的均值和标准差的差异，来保持风格图像的纹理和色调。风格损失也是通过MSE计算的。
 \end{itemize}
@@ -366,19 +362,211 @@ subsection={format=\raggedright,
 
 在训练过程中，我们使用Adam优化器来更新模型参数，学习率设置为0.00005。训练过程中，我们每隔一定的迭代次数保存一次模型，并记录当前的内容损失和风格损失。
 
+\subsection{模型亮点}
+
+本实验所采用的模型亮点有以下几点：
+
+\begin{itemize}[nosep]
+    \item \textbf{通过统计匹配实现风格迁移：} AdaIN的核心机制是将内容图像的特征图与风格图像的统计量（均值和方差）对齐，从而实现风格迁移。通过这种方式，模型能够在保持内容图像结构的同时，灵活地应用不同风格图像的风格特征。
+    \item \textbf{任意风格迁移：} 相比早期方法\cite{gatys2016image}，每个风格训练一个模型，AdaIN支持任意风格图在一次前向传播中迁移到内容图像。
+    \item \textbf{架构简单高效：} AdaIN 风格迁移模型的架构相对简单，主要由编码器、AdaIN层和解码器组成，这样的架构训练简单，推理速度快于早期方法\cite{gatys2016image}。
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.47\textwidth]{content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.47\textwidth]{style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.47\textwidth]{style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.47\textwidth]{style10.jpg}
+    }
+    \caption{不同 $\lambda$ 值下的总损失曲线$\mathcal{L}_\lambda$}
+    \label{fig:loss}
+\end{figure}
+
+\begin{table}[h!]
+    \centering
+    \caption{不同 $\lambda$ 下的训练时间（秒）}
+    \begin{tabular}{ccccc}
+        \toprule
+        $\lambda$ & $\frac{1}{3}$ & 1 & 3 & 10 \\
+        \midrule
+        训练时间$t$ & 2321.24 & 2129.29  & 2556.45 & 2619.18 \\
+        最终损失值 & 25.1919 & 10.7254 & 18.8458 & 31.4229 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:lambda_time_transposed}
+\end{table}
+
 \chapter{实验结果}
 
 \section{代码实现}
 
-本实验的代码仓库已开源在Github上，地址为\url{https://github.com/Mingle-2012/style-transfer}。其中，模型代码位于\texttt{model.py}文件中，训练代码位于\texttt{train.py}文件中，风格迁移代码位于\texttt{stylize.py}文件中。
+本实验的代码仓库已开源在Github上，地址为\url{https://github.com/Mingle-2012/style-transfer}。其中，模型代码位于\texttt{model.py}文件中，训练代码位于\texttt{train.py}文件中，风格迁移代码位于\texttt{stylize.py}文件中，\texttt{readme}文件也提供了使用说明便于复现。
+
+\begin{figure}[h!]
+    \centering
+    \subfigure[风格图像1]{
+        \includegraphics[width=0.32\textwidth]{styles1.png}
+    }
+    \subfigure[风格图像2]{
+        \includegraphics[width=0.32\textwidth]{styles2.png}
+    }
+    \caption{两个来自动漫风格数据集的风格图像}
+    \label{fig:styles}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{content1.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content1_style1_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content1_style1_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content1_style1_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content1_style1_style10.jpg}
+    }\\
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{content2.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content2_style1_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content2_style1_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content2_style1_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content2_style1_style10.jpg}
+    }\\
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{contents3.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content3_style1_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content3_style1_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content3_style1_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content3_style1_style10.jpg}
+    }\\
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{content4.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content4_style1_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content4_style1_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content4_style1_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content4_style1_style10.jpg}
+    }
+    \caption{不同内容图像和风格图像1下，不同$\lambda$值的风格迁移结果}
+    \label{fig:style1}
+\end{figure}
 
 \section{实验结果}
 
-为了验证模型的效果，我们通过调整风格损失的权重系数 $\lambda$ ，训练了多个模型，来观察生成图像的风格迁移效果。$\lambda$ 的值越大，生成图像的风格越接近于风格图像；反之，生成图像的内容结构越接近于内容图像。$\lambda$ 的取值为 $[\frac{1}{3}, 1, 3, 10]$，在后续展示图片时，模型的顺序也是按照 $\lambda$ 的值从小到大排列的。我们在训练过程中记录了每个模型的内容损失和风格损失，并绘制了每个模型的损失曲线，如图~\ref{fig:loss}所示。
+为了验证模型的效果，我们通过调整风格损失的权重系数 $\lambda$ ，训练了多个模型，来观察生成图像的风格迁移效果。$\lambda$ 的值越大，生成图像的风格越接近于风格图像；反之，生成图像的内容结构越接近于内容图像。$\lambda$ 的取值为 $[\frac{1}{3}, 1, 3, 10]$，在后续展示图片时，模型的顺序也是按照 $\lambda$ 的值从小到大排列的。为了尽可能不引入浮点计算，对于$\lambda = \frac{1}{3}$，我们采用了$\mathcal{L} = 3 \cdot \mathcal{L}_c + \mathcal{L}_s$
+。我们在训练过程中记录了每个模型的内容损失和风格损失，并绘制了每个模型的总损失曲线$\mathcal{L}_\lambda$，如图~\ref{fig:loss}所示。同时，每一个模型的训练时间也被记录在表~\ref{tab:lambda_time_transposed}中。
+
+我们选择了5张内容图像和2张风格图像来测试我们训练好的模型。内容图像将被展示于结果图的第一列，风格图像展示在图~\ref{fig:styles}中。
+
+如图~\ref{fig:style1}和图~\ref{fig:style2}所示，我们展示了不同内容图像和风格图像下，不同 $\lambda$ 值的风格迁移结果。每一行展示的是同一张内容图像在不同 $\lambda$ 值下的风格迁移结果，第一列为原内容图像，第二列为 $\lambda = \frac{1}{3}$ 的结果，第三列为 $\lambda = 1$ 的结果，第四列为 $\lambda = 3$ 的结果，第五列为 $\lambda = 10$ 的结果。
 
 
 
+\begin{figure}[t]
+    \centering
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{content1.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content1_style2_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content1_style2_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content1_style2_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content1_style2_style10.jpg}
+    }\\
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{content2.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content2_style2_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content2_style2_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content2_style2_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content2_style2_style10.jpg}
+    }\\
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{contents3.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content3_style2_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content3_style2_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content3_style2_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content3_style2_style10.jpg}
+    }\\
+    \subfigure[原内容图像]{
+        \includegraphics[width=0.17\textwidth]{content4.jpg}
+    }
+    \subfigure[$\lambda = \frac{1}{3}$]{
+        \includegraphics[width=0.17\textwidth]{content4_style2_content3.jpg}
+    }
+    \subfigure[$\lambda = 1$]{
+        \includegraphics[width=0.17\textwidth]{content4_style2_style1.jpg}
+    }
+    \subfigure[$\lambda = 3$]{
+        \includegraphics[width=0.17\textwidth]{content4_style2_style3.jpg}
+    }
+    \subfigure[$\lambda = 10$]{
+        \includegraphics[width=0.17\textwidth]{content4_style2_style10.jpg}
+    }
+    \caption{不同内容图像和风格图像2下，不同$\lambda$值的风格迁移结果}
+    \vspace{-3ex}
+    \label{fig:style2}
+\end{figure}
 
+可以看到，随着 $\lambda$ 的增大，生成图像的风格逐渐接近于风格图像，而内容结构则逐渐被模糊化。$\lambda = \frac{1}{3}$ 时，生成图像的内容结构较为清晰，但风格特征较弱；而 $\lambda = 10$ 时，生成图像的风格特征明显，但内容结构几乎完全被覆盖。我们发现，$\lambda = 1$ 或 $\lambda = 3$ 时，生成图像的内容和风格特征相对来说较为平衡，能够较好地保留内容结构的同时融合风格特征。
 
 \chapter{实验总结}
 

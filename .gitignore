@@ -310,3 +310,5 @@ TSWLatexianTemp*
 *.pdf
 
 .vscode/
+*.json
+tempCodeRunnerFile.py
