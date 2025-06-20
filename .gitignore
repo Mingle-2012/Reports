@@ -312,3 +312,5 @@ TSWLatexianTemp*
 .vscode/
 *.json
 tempCodeRunnerFile.py
+
+.DS_Store
