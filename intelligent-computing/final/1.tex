@@ -76,8 +76,8 @@ subsection={format=\raggedright,
 \usepackage{varwidth} % 可变宽度的 parbox
 
 %%%%% ===== 参考文献与链接
-\usepackage[numbers,sort&compress,sectionbib,super, square]{natbib} %引用上标，禁用连续缩写。
-\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
+\usepackage[numbers,sort&compress,sectionbib,square]{natbib} %引用上标，禁用连续缩写。
+% \newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
 
 
 \usepackage[xetex,pagebackref]{hyperref}
@@ -187,13 +187,14 @@ subsection={format=\raggedright,
 \renewcommand{\sectionmark}[1]{\markright{\thesection \ #1}{}}
 %\fancyhead[RO,LE]{{\small\songti\rightmark}}     % 节标题
 %\fancyhead[RE]{{\small\songti\leftmark}}      % 章标题
-\fancyhead[C]{《智能计算系统》课程期末项目报告}
+\fancyhead[C]{《智能计算系统》课程项目报告}
 % \fancyhead[RO,LE]{$\cdot$ {\small\thepage} $\cdot$}
 \fancyfoot[C]{{-\thepage-}}
 %\fancyfoot[CO,CE]{{\thepage}}
 
 \ctexset{chapter/break={}}
 
+\newcommand{\BERTBASE}{$\texttt{BERT}_{\texttt{BASE}}$}
 \begin{document}
 
 \begin{titlepage}
@@ -206,7 +207,7 @@ subsection={format=\raggedright,
                     \includegraphics[width=14cm]{0.png}
                 \end{figure}
             
-                \heiti\zihao{2}《智能计算系统》课程期末项目报告\\
+                \heiti\zihao{2}{\textbf{《智能计算系统》课程期末项目报告}}\\
                 \vspace{0.5em}
                 \heiti\zihao{2} 基于剪枝掩码的 \Times Transformer \heiti 轻量化研究\\
                 \Times\zihao{-2} Mask-based Retraining-free Pruning for Transformers\\
@@ -254,7 +255,7 @@ subsection={format=\raggedright,
 \chapter{课题及小组简介}
 \section{课题需求}
 
-本项目中，我们调研了当前主流的 Transformer \cite{vaswani2017attention} 轻量化方法，并选取一篇代表性论文进行深入分析与方法重现。通过复现原论文中的实验，我们验证了作者所提出轻量化策略的有效性，并在此基础上将该轻量化策略推广至其他 Transformer 模型（如 Vision Transformer \cite{dosovitskiy2020image}, ViT）以及卷积神经网络模型（Convolutional Neural Network \cite{fukushima1980neocognitron}, CNN）上进行实验探索，最终实现的轻量化效果达到了预期目标。
+本项目中，我们调研了当前主流的 Transformer\cite{vaswani2017attention} 轻量化方法，并选取一篇代表性论文进行深入分析、重现与拓展。
 
 \section{我们的贡献}
 
@@ -291,9 +292,9 @@ subsection={format=\raggedright,
 
 \section{相关工作}
 
-Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成为自然语言处理领域的主流架构。然而，Transformer模型通常具有较高的计算复杂度和内存占用，这使得在资源受限的设备上部署变得困难。因此，Transformer模型的轻量化研究成为了一个重要的研究方向。近年来，Transformer模型的高效化研究取得了显著进展，主要围绕四个方向展开。我们在~\ref{sec:transformer_pruning}节中介绍了多个主流的轻量化方向，并在~\ref{sec:transformer_pruning_methods}节中介绍了现有的Transformer剪枝方法。
+Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成为自然语言处理领域的主流架构。然而，Transformer模型通常具有较高的计算复杂度和内存占用，这使得在资源受限的设备上部署变得困难。因此，Transformer模型的轻量化研究成为了一个重要的研究方向。近年来，Transformer模型的高效化研究取得了显著进展，主要围绕四个方向展开。我们在~\ref{sec:transformer_pruning} 节中介绍了多个主流的轻量化方向，并在~\ref{sec:transformer_pruning_methods} 节中介绍了现有的Transformer剪枝方法。
 
-\subsection{Transformer轻量化现有研究}
+\subsection{Transformer轻量化}
 \label{sec:transformer_pruning}
 
 首先，研究者们通过改进注意力机制来改善 Transformer 架构设计。例如，Linformer\cite{wang2020linformer}通过低秩投影将注意力复杂度从平方级降至线性，而Reformer\cite{kitaev2020reformer}则利用局部敏感哈希（LSH）来减少注意力计算量。这些方法在保持模型性能的同时显著提升了计算效率。
@@ -304,7 +305,7 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 然而，后训练剪枝的研究相对较少。现有的CNN后训练剪枝方法\cite{yvinec2021red}难以直接应用于Transformer架构，主要是因为Transformer的特殊结构和使用GELU激活函数\cite{hendrycks2016gaussian}的特性。传统方法通常依赖ReLU激活的线性特性\cite{kim2020neuron}，而GELU的非线性使得剪枝后的参数重要性评估更加复杂。本文提出的方法克服了这些限制，首次实现了Transformer的后训练结构化剪枝。该方法的核心思想具有普适性，不仅可以应用于语言模型，还可以推广到其他架构，甚至可能为CNN的后训练剪枝提供新的思路。这一突破为模型部署阶段的压缩提供了更多可能性，特别是在资源受限的应用场景中具有重要意义。
 
-\subsection{Transformer剪枝方法研究}
+\subsection{Transformer剪枝方法}
 \label{sec:transformer_pruning_methods}
 
 现有剪枝方法可分为非结构化和结构化两类。非结构化剪枝注重于移除单个参数或连接，主要基于参数的统计特性。其中基于幅度的剪枝\cite{gale2019state}通过移除绝对值较小的权重实现模型稀疏化，这种方法简单有效但可能破坏模型结构。基于梯度的剪枝\cite{molchanov2019importance}则考虑参数对损失函数的影响，能够更好地保留重要连接。而Lottery Ticket假设\cite{frankle2018lottery}提出了一个有趣的观点，即原始网络中可能包含可以直接训练的子网络，这为剪枝提供了新的理论依据。
@@ -313,7 +314,7 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 \section{核心方法概述}
 
-本论文中，作者提出了一种基于结构化剪枝的轻量化策略，通过对训练后的Transformer模型进行高效剪枝，显著降低了模型的计算复杂度。该方法的核心思想是通过Fisher信息矩阵来评估参数的重要性，并在此基础上基于贪心的思想进行结构化剪枝。这一方法的三阶段流程如图\ref{fig:framework}所示，主要包括掩码搜索、掩码重排和掩码调优三个步骤。具体流程如下：
+本论文中，作者提出了一种基于结构化剪枝的轻量化策略，通过对训练后的Transformer模型进行高效剪枝，显著降低了模型的计算复杂度。该方法的核心思想是通过Fisher信息矩阵来评估参数的重要性，并在此基础上基于贪心的思想进行结构化剪枝。这一方法的三阶段流程如图 \ref{fig:framework} 所示，主要包括掩码搜索、掩码重排和掩码调优三个步骤。具体流程如下：
 
 \begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
 \item \textbf{掩码搜索（\Times Mask Search）}：该方法通过轻量级搜索算法快速确定剪枝目标，利用Fisher信息矩阵识别不重要的注意力头（MHA）和FFN层滤波器。
@@ -332,7 +333,7 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 本研究提出的三阶段结构化剪枝方法通过系统化的流程实现了Transformer模型的高效压缩，每个阶段都具有明确的技术目标和实现方法。
 
-在掩码搜索阶段，作者基于Fisher信息矩阵开发了轻量级搜索算法。该算法通过分析模型参数在训练数据上的二阶导数信息，精确识别出多头注意力机制中不重要的注意力头以及前馈网络层中的冗余滤波器。具体实现时，由于原泰勒展开非常复杂，作者采用对角近似技术简化Fisher矩阵计算（如公式\ref{eq:fisher}所示），显著降低了计算复杂度。这一步骤的输出是一个初步的二进制掩码，标记了模型中各组件的重要性。
+在掩码搜索阶段，作者基于Fisher信息矩阵开发了轻量级搜索算法。该算法通过分析模型参数在训练数据上的二阶导数信息，精确识别出多头注意力机制中不重要的注意力头以及前馈网络层中的冗余滤波器。具体实现时，由于原泰勒展开非常复杂，作者采用对角近似技术简化Fisher矩阵计算（公式 \ref{eq:fisher}），显著降低了计算复杂度。这一步骤的输出是一个初步的二进制掩码，标记了模型中各组件的重要性。
 
 \begin{equation}\label{eq:fisher}
     \mathcal{I} := \frac{1}{|\mathcal{D}|} \sum_{(x,y)\in\mathcal{D}} \left( \frac{\partial }{\partial \mathbf{m}} \mathcal{L}(x, y;\mathbf{1}) \right) \left( \frac{\partial }{\partial \mathbf{m}} \mathcal{L}(x, y;\mathbf{1}) \right)^\top
@@ -346,7 +347,8 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 \chapter{实验}
 
-实验分为两个部分。第一部分为对论文中原实验的复现，验证了原论文所提出轻量化策略的有效性和可信性；第二部分为我们组所开展的额外工作，主要包括验证基于剪枝掩码重构后的网络结构在准确率和计算复杂度是否达到预期的轻量化效果，并探索将该轻量化策略扩展应用到其他 Transformer 模型和CNN模型上的实验。
+实验分为两个部分。第一部分为对论文中原实验的复现，验证了原论文所提出轻量化策略的有效性和可信性；第二部分为我们开展的额外工作，主要包括验证基于剪枝掩码重构后的网络结构在准确率和计算复杂度是否达到预期的轻量化效果，并探索将该轻量化策略扩展应用到其他 Transformer 模型和CNN模型上的实验。
+
 
 \section{实验设置}
 
@@ -354,27 +356,27 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 为了保证实验结果的稳定性和可靠性，对于每一个测试任务，我们在每个固定的剪枝比例下，分别使用三个不同的随机种子运行剪枝流程。随后，我们在验证集上评估模型性能，并对三次独立运行的结果取平均，以减少随机因素带来的波动。
 
-我们所使用的主要实验环境配置如表\ref{tab:config}所示。
+我们所使用的主要实验环境配置如表 \ref{tab:config} 所示。
 
 \begin{table}[H]
     \centering
-    \caption{实验配置}
-    \label{tab:config}
-    \begin{tabular}{cc}
+    \begin{tabular}{ll}
     \toprule
     \textbf{类别} & \textbf{配置详情} \\
     \midrule
     模型 & BERTs\cite{devlin2019bert}，DistilBERTs\cite{sanh2019distilbert}，Vision Transformer\cite{dosovitskiy2020image} \\
     CUDA 版本 & 12.9 \\
     操作系统 & WSL2 with Ubuntu 22.04 \\
-    PyTorch 版本 & 2.7.0 \cite{paszke2019pytorch}\\
-    Transformer 版本 & HuggingFace Transformers 4.52.3 \cite{wolf2020transformers} \\
+    PyTorch 版本 & 2.7.0\cite{paszke2019pytorch}\\
+    Transformer 版本 & HuggingFace Transformers 4.52.3\cite{wolf2020transformers} \\
     \multirow{2}{*}{\makecell[c]{数据集}} 
         & GLUE\cite{wang2018glue}（QQP, MRPC, STS-B, SST-2, RTE, MNLI, QNLI） \\
         & SQuAD\cite{rajpurkar2018know, rajpurkar2016squad}（1.1 \& 2.0） \\
     数据采样 & 从训练集中随机采样 2000 个样本用于实验 \\
     \bottomrule
     \end{tabular}
+        \caption{实验配置}
+    \label{tab:config}
 \end{table}
 
 \section{实验衡量标准}
@@ -393,11 +395,9 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 其中，$L$ 表示 Transformer 层数，$d_{\text{model}}$ 为模型隐藏层维度，$d_{\text{ff}}$ 为前馈网络维度，$T$ 为输入序列长度。
 
-\section{Exp 1 \& 2: 原论文实验复现}
+\section{论文实验复现(Exp 1 \& 2)}
 
-\noindent\textbf{Exp 1.} 为验证论文中提出的剪枝方法的有效性，我们严格按照其实验设置在 BERTBASE 和 DistilBERT 模型上进行了复现实验，并将结果与原论文图表进行对比分析。
-
-图~\ref{fig:original_results} 为原论文中在不同 FLOPs 限制下，剪枝后的模型在 GLUE 和 SQuAD 数据集上的准确率变化趋势；图~\ref{fig:reproduced_results} 为我们基于相同设定复现得到的实验结果。
+\noindent\textbf{Exp 1. 主实验复现 } 为验证论文中提出的剪枝方法的有效性，我们严格按照其实验设置在 $\texttt{BERT}_{\texttt{BASE}}$ 和 \texttt{DistilBERT} 模型上进行了复现实验，并将结果与原论文图表进行对比分析。
 
 \begin{figure}[H]
     \centering
@@ -409,73 +409,72 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{img/ourzhu.png}
-    \caption{我们的复现实验结果：在相同设定下的准确率}
+    \caption{复现实验结果}
     \label{fig:reproduced_results}
 \end{figure}
+图~\ref{fig:original_results} 为原论文中在不同 FLOPs 限制下，剪枝后的模型在 GLUE 和 SQuAD 数据集上的准确率变化趋势；图~\ref{fig:reproduced_results} 为我们基于相同设定复现得到的实验结果。
+从实验结果的对比可以看出，复现实验结果趋势与原论文基本一致：
 
-从两幅图的对比可以看出，我们的实验结果整体趋势与原论文保持一致：
+\begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt, label=(\arabic*)]
+    \item 在 \BERTBASE 模型上，随着 FLOPs 削减，模型在 GLUE 子任务（如 MNLI、QQP、SST-2）和SQUAD任务上的准确率有所下降，但整体保持在较高水平；
+    \item 在 \texttt{DistilBERT} 模型上，尽管本身已经为压缩架构，但剪枝后依然可实现  FLOPs 的降低。模型在 GLUE 子任务（如 MNLI、QQP、SST-2）和SQUAD任务上的准确率变化趋势与 \BERTBASE 相似，且在大多数任务上保持较高的准确率。
+\end{enumerate}
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item 在 BERTBASE 模型上，随着 FLOPs 削减，模型在 GLUE 子任务（如 MNLI、QQP、SST-2）和SQUAD任务上的准确率下降稳定，与原论文一致；
-    \item 在 DistilBERT 模型上，尽管本身已经为压缩架构，但剪枝后依然可实现  FLOPs 的降低，模型在 GLUE 子任务（如 MNLI、QQP、SST-2）和SQUAD任务上的准确率下降稳定，与原论文一致；
-    \item 个别任务（如MRPC）可能由于基线准确率较低，对剪枝更加敏感，表现出一定波动。
-\end{itemize}
+综上所述，复现实验结果成功验证了原论文提出的轻量级剪枝框架在无需模型重训练的情况下，能够有效减少计算量，同时保持较高的模型性能。
 
-综上所述，我们的复现实验结果成功验证了原论文提出的轻量级剪枝框架在无需模型重训练的情况下，能够有效减少计算量，同时保持较高的模型性能。
+\noindent\textbf{Exp 2. 消融实验复现 } 除了上述论文中的主实验，我们还复现了论文中的消融实验。通过手动控制剪枝流程中Mask Rearrangement 和 Mask Tuning两个关键步骤的开启与关闭，观察其对剪枝后模型性能的影响，以验证各环节对最终模型效果的贡献。该消融实验同样基于作者提供的代码框架完成，保证了实验过程的准确性与一致性。
 
-\noindent\textbf{Exp 2.} 除了上述论文中的主实验，我们还复现了论文中的消融实验。通过手动控制剪枝流程中的两个关键步骤——mask rearrangement 和 mask tuning——的开启与关闭，观察其对剪枝后模型性能的影响。具体而言，我们在相同数据和模型配置下，分别关闭或开启这两个步骤，重复剪枝与测试过程，以验证各环节对最终模型效果的贡献。该消融实验同样基于作者提供的代码框架完成，保证了实验过程的准确性与复现性。
-
-为分析剪枝流程中各阶段对模型性能的具体影响，我们复现了原论文中的消融实验，重点考察 \textit{mask search}、\textit{mask rearrangement} 以及 \textit{mask tuning} 的作用。图~\ref{fig:ablation_original} 为原论文给出的实验结果，表~\ref{tab:ablation_results} 为我们复现得到的实验结果。
+图~\ref{fig:ablation_original} 为原论文给出的实验结果，表~\ref{tab:ablation_results} 为我们复现得到的实验结果。
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/yunlunwenxiao.png}
+    \includegraphics[width=0.9\textwidth]{img/yunlunwenxiao.png}
     \caption{原论文消融实验结果（图源：原论文）}
     \label{fig:ablation_original}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[H]
     \centering
-    \caption{Reproducing the Ablation Study.}
-    \label{tab:ablation_results}
     \begin{tabular}{lcccc|c}
-    \toprule
-    Method & MNLI & MRPC & QNLI & QQP & Avg. Diff \\
-    \midrule
-    Baseline & 84.5\% & 86.3\% & 91.4\% & 91.0\% \\
-    \cmidrule(lr){1-5}
-    Mask Search & 81.5\% & 83.2\% & 88.1\% & 89.9\% \\
-    +Mask Rearrangement & 82.1\% & 83.3\% & 88.9\% & 90.1\% & +0.435 \\
-    \textbf{+Mask Tuning} & \textbf{82.3\%} & \textbf{85.1\%} & \textbf{90.1\%} & \textbf{90.4\%} & +0.825 \\
-    \bottomrule
+        \toprule
+        Method & MNLI & MRPC & QNLI & QQP & Avg. Diff \\
+        \midrule
+        Baseline & 84.5\% & 86.3\% & 91.4\% & 91.0\% \\
+        \cmidrule(lr){1-5}
+        Mask Search & 81.5\% & 83.2\% & 88.1\% & 89.9\% \\
+        +Mask Rearrangement & 82.1\% & 83.3\% & 88.9\% & 90.1\% & +0.435 \\
+        \textbf{+Mask Tuning} & \textbf{82.3\%} & \textbf{85.1\%} & \textbf{90.1\%} & \textbf{90.4\%} & +0.825 \\
+        \bottomrule
     \end{tabular}
+    \caption{消融实验复现结果}
+    \label{tab:ablation_results}
 \end{table}
 
-我们采用以下三种剪枝流程组合进行测试：
+% 我们采用以下三种剪枝流程组合进行测试：
 
-\begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item \textbf{仅使用 mask search}；
-    \item \textbf{mask search + mask rearrangement}；
-    \item \textbf{mask search + mask rearrangement + mask tuning}（完整剪枝流程）。
-\end{enumerate}
+% \begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
+%     \item \textbf{仅使用 mask search}；
+%     \item \textbf{mask search + mask rearrangement}；
+%     \item \textbf{mask search + mask rearrangement + mask tuning}（完整剪枝流程）。
+% \end{enumerate}
 
 从图中结果可以看出：
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item 在仅使用 mask search 的情况下，模型准确率已有较为良好的表现，说明该剪枝策略具备一定的鲁棒性；
-    \item 引入 mask rearrangement 后，模型性能进一步提升，表明掩码重排有助于优化保留单元的分布；
-    \item 最终加入 mask tuning 后，准确率继续提升，在多个任务中接近或基本恢复到未剪枝前的性能水平；
-\end{itemize}
+\begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
+    \item[(1)] 在仅使用 Mask Search 的情况下，模型准确率已有较为良好的表现；
+    \item[(2)] 引入 Mask Rearrangement 后，模型性能进一步提升，表明掩码重排有助于优化保留单元的分布；
+    \item[(3)] 最终加入 Mask Tuning 后，准确率继续提升，在多个任务中接近或基本恢复到未剪枝前的性能水平；
+\end{enumerate}
 
-我们复现得到的趋势与原论文高度一致，三种配置在准确率表现上的相对关系保持不变，验证了 mask rearrangement 与 tuning 阶段在该剪枝框架中确实能够起到有效补偿作用。同时，这也表明该框架具有良好的可复现性与稳定性。
+复现结果与原论文基本一致，三种配置在准确率表现上的相对关系保持不变，验证了 Mask Rearrangement 与 Mask Tuning 在该剪枝框架中确实能够起到有效作用。
 
-\section{Exp 3\textasciitilde 6: 我们的工作}
+\section{我们的工作(Exp 3\textasciitilde 7)}
 
 在成功复现论文主实验的基础上，我们围绕剪枝策略的实际应用与扩展开展了两方面的研究，进一步验证该策略的工程实用性和通用性。
 
-首先，我们发现Github仓库中提供的代码仅生成剪枝掩码文件，并未实现对模型结构的实际裁剪。在实际应用中，如果仅依赖掩码文件进行推理，模型仍然保留了原有的参数规模，无法实现真正的结构压缩。这种“虚剪枝”方式在推理效率与存储开销方面未能充分体现结构压缩的优势，仍然需要加载完整模型参数。为此，我们基于掩码文件实现了模型结构的重构过程，确保模型在推理时能够真正体现出结构上的压缩。（见 Exp 3 \& 4）
+首先，我们发现Github仓库中提供的代码仅生成剪枝掩码文件，并未实现对模型结构的实际裁剪。在实际应用中，如果仅依赖掩码文件进行推理，模型仍然保留了原有的参数规模，无法实现真正的结构压缩。这种“虚剪枝”方式在推理效率与存储开销方面未能充分体现结构压缩的优势，仍然需要加载完整模型参数。为此，我们基于掩码文件实现了模型结构的重构过程，确保模型在推理时能够真正体现出结构上的压缩（Exp 3 \& 4）。
 
-另外，由于文章虽然是Transformer模型的轻量化研究，但仅在BERT模型上进行了实验，缺少对其他Transformer架构的测试。我们将剪枝流程移植到视觉Transformer\cite{dosovitskiy2020image}（ViT）和卷积神经网络\cite{fukushima1980neocognitron}（CNN）模型上，验证该剪枝策略在不同架构下的适用性与效果。（见 Exp 5 \& 6）
+另外，由于文章虽然是Transformer模型的轻量化研究，但仅在BERT模型上进行了实验，缺少对其他Transformer架构的测试。我们将剪枝流程移植到视觉Transformer\cite{dosovitskiy2020image}（ViT）和卷积神经网络\cite{fukushima1980neocognitron}（CNN）模型上，验证该剪枝策略在不同架构下的适用性与效果（Exp 5  \textasciitilde 7）。
 
 上述两个方向的实验均基于我们自行编写的剪枝与重构代码实现，数据集使用公开版本，评估流程与论文主实验保持一致。通过这些尝试，我们不仅验证了该方法的结构剪枝潜力，也初步探索了其在语言与视觉领域之间的迁移能力。
 
@@ -483,12 +482,12 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 原论文所提出的剪枝框架通过对模型权重施加二值掩码，将部分通道或注意力头的输出置零，以实现计算成本的降低。这种“虚剪枝”虽然可直接评估精度与 FLOPs，但其结构未发生变化，难以在真实部署中体现性能优势。
 
+
+
 为更进一步地压缩模型、提升推理效率，我们基于剪枝阶段生成的掩码文件，构建了实际结构上被裁剪的模型。具体方法为根据掩码确定每层保留的结构单元，并据此修改 Transformer 各层的输入输出维度，实现真实意义上的结构剪枝。
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Accuracy Comparison under Different Compression Ratios}
-    \label{fig:structural_vs_virtual_acc}
     \begin{tabular}{lcccc}
     \toprule
     Task & Accuracy-O & Compression & Accuracy-S & \textbf{Accuracy-H (Ours)} \\
@@ -522,77 +521,75 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
          &                         & 10\% & \cellcolor{lightgray}0.9346 & \cellcolor{darkgray}0.9335 \\
     \bottomrule
     \end{tabular}
+    \caption{不同压缩率设置下结构剪枝与虚剪枝模型的验证集准确率对比}
+    \label{fig:structural_vs_virtual_acc}
 \end{table}
 
-如表~\ref{fig:structural_vs_virtual_acc} 所示，我们在四个任务上比较了结构剪枝与虚剪枝模型的验证集准确率。可以观察到：
+\paragraph{Exp 3. 结构剪枝准确率实验 }如表~\ref{fig:structural_vs_virtual_acc} 所示，我们在四个任务上比较了结构剪枝与虚剪枝模型的验证集准确率。其中，Accuracy-O 表示原始模型的准确率，Compression 列表示压缩比例（\texttt{compress} 参数），Accuracy-S 列为虚剪枝模型的准确率，Accuracy-H 列为我们基于掩码文件构建的结构剪枝模型的准确率。
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item 四项任务中，结构剪枝模型与虚剪枝模型表现一致，平均准确率差异在 1\% 以内；
-    \item 个别任务（如 QQP的40\%压缩）上结构剪枝略优，表明模型容量减小在某些情况下可能带来泛化能力提升；
-    \item 该结果验证了剪枝掩码在准确率层面具备良好的迁移性，适合指导实际结构构建。
-\end{itemize}
+实验结果表明，(1)四项任务中，结构剪枝模型与虚剪枝模型表现一致，平均准确率差异在 1\% 以内；(2)个别任务（如 QQP的40\%压缩）上结构剪枝略优，表明模型容量减小在某些情况下可能带来泛化能力提升；(3)该结果验证了剪枝掩码在准确率层面具备良好的迁移性，适合指导实际结构构建。
 
-此外，我们统计了在不同压缩比例（compress 参数）下，结构剪枝后模型 FLOPs 的变化情况，结果如图~\ref{fig:structural_flops_trend} 所示。
+
+\paragraph{Exp 4. 结构剪枝FLOPs实验 }图~\ref{fig:structural_flops_trend} 展示了在不同的保留率（\texttt{compress} 参数）下，结构剪枝后模型 FLOPs的减少率。可以发现，随着压缩率的增加，模型的 FLOPs 也显著下降，且FLOPs的减少率与压缩率（$1 - \texttt{compress}$）近似一致。这表明结构剪枝确实能够有效降低模型的计算复杂度，并且与原论文中估算的虚剪枝 FLOPs 非常接近，说明我们的结构裁剪量与掩码一致，验证了结构裁剪方法的正确性,也进一步证明了该框架产生的掩码文件具备作为剪枝指导的实际价值。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{img/cutModelFLops.png}
-    \caption{在不同 compress 设置下结构剪枝模型的 FLOPs 变化}
+    \caption{不同压缩率设置下结构剪枝模型的 FLOPs 变化}
     \label{fig:structural_flops_trend}
 \end{figure}
 
-图中展示了 compress 参数从 0.5 到 0.9 时模型 FLOPs 的变化趋势：
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item FLOPs 随 compress 参数的减小而显著下降，整体下降趋势平稳，未出现异常波动；
-    \item 结构剪枝后模型 FLOPs 降幅与原论文中估算的虚剪枝 FLOPs 非常接近，验证了我们结构构建的正确性；
-    \item FLOPs 与 compress 参数近似呈线性关系，说明掩码生成过程在控制压缩率方面具有良好的可调性。
-\end{itemize}
+\subsection{剪枝策略的迁移与应用评估}
 
-该实验不仅验证了该剪枝策略在保证准确率的前提下优化FLOPs 的可行性，也进一步证明了该框架产生的掩码文件具备作为剪枝指导的实际价值。
+在成功复现原论文实验的基础上，我们将剪枝策略迁移应用于其他模型架构，主要包括 Vision Transformer（ViT）和卷积神经网络（CNN）。通过在不同数据集上的图像分类任务评估，评估该剪枝策略的通用性和有效性。
 
+\subsubsection{迁移至 ViT 模型} 
 
-\subsection{剪枝策略在 ViT 与 CNN 上的迁移与应用评估}
+我们使用 \texttt{google/vit-base-patch16-224}作为基础模型，首先在四个数据集(CIFAR-10、CIFAR-100、Fashion-MNIST和Mini-ImageNet)上进行图像分类任务的训练。
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item \textbf{ViT 剪枝实验} \\
-    我们将剪枝策略应用于 ViT 模型中，以视觉图像分类任务作为测试平台，所使用的数据集包括：
-    \begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-        \item CIFAR-10
-        \item CIFAR-100
-        \item Fashion-MNIST
-        \item Mini-ImageNet
-    \end{itemize}
-    TBD
-    
-    \item \textbf{CNN 剪枝实验} \\
-    对于 CNN 模型，我们选取经典卷积网络结构，在 MNIST 数据集上进行图像分类任务。
-将论文中的三阶段剪枝方法创新性地应用在了CNN模型上，并且在实验结果中取得了卓越的成果。
-\end{itemize}
+尽管 ViT 和 BERT 都基于 Transformer 架构，但 ViT 的输入为图像而非文本，其注意力机制和前馈网络结构也有所不同，作者针对 BERT 模型的实现不能直接应用于 ViT 模型。因此，我们为 ViT 模型编写了专门的剪枝代码，确保能够正确处理 ViT 的注意力头和前馈网络层。
 
-为评估原论文提出的剪枝策略在不同模型架构中的通用性，我们将其迁移应用于 Vision Transformer（ViT）和卷积神经网络（CNN）模型上，分别进行了图像分类任务。剪枝算法及流程仿照论文实现，包括掩码生成、结构保留、mask rearrangement 与 mask tuning 等关键步骤。\\
-\noindent\textbf{ViT 模型上的剪枝评估} 
-
-我们选取了四个具有代表性的数据集——CIFAR-10、CIFAR-100、Fashion-MNIST 和 Mini-ImageNet，在 ViT 架构下进行图像分类实验。图~\ref{fig:vit_accuracy_trend} 展示了随着压缩率（compress 参数）增大，不同任务下模型准确率的变化趋势。
+\paragraph{Exp 5. ViT 迁移实验} 图~\ref{fig:vit_accuracy_trend} 展示了随着压缩率增大，不同数据集下模型准确率的变化。
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{img/extendOnVIT.png}
+    \includegraphics[width=0.6\textwidth]{img/extendOnVIT.png}
     \caption{ViT 模型在不同数据集下随压缩率变化的准确率曲线}
     \label{fig:vit_accuracy_trend}
 \end{figure}
 
 从图中可以观察到：
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item ViT 在 CIFAR-10 和 Fashion-MNIST 等分类类别相对较少的数据集上，剪枝策略具有较好的稳定性，即使 compress 达到 50\%，准确率依然保持较高；
-    \item 对于 CIFAR-100 与 Mini-ImageNet 等类别数较多、任务复杂度较高的数据集，准确率在 compress 提升时下降较快；
-    \item 总体趋势表明：剪枝策略对 ViT 结构仍有效，但对高复杂度任务的适应性相对有限，未来可考虑引入训练阶段调整策略以缓解性能下降。
-\end{itemize}
+\begin{enumerate}[noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt, label=(\arabic*)]
+    \item ViT 在 CIFAR-10 和 Fashion-MNIST 等分类类别相对较少的数据集上，剪枝策略具有较好的稳定性，即使压缩率达到 50\%，准确率依然保持较高；
+    \item 对于 CIFAR-100 与 Mini-ImageNet 等类别数较多的数据集，准确率在压缩率提升时下降较快；
+\end{enumerate}
 
-\noindent\textbf{CNN 模型上的剪枝评估} 
+总体趋势表明，剪枝策略对 ViT 结构仍有效，但对分类数目较多的数据集（如 CIFAR-100）表现出一定的敏感性，可能需要更精细的剪枝策略或更复杂的掩码设计来保持性能。
 
-我们在 CNN 模型中使用 MNIST 数据集进行测试，图~\ref{fig:cnn_accuracy_flops} 展示了随压缩率提升，模型准确率与 FLOPs 的变化情况。
+我们仔细分析了其在多分类任务上表现不佳的原因，主要是BERT模型的任务大多可以看成二分类、三分类等分类数目较少的任务，剪枝策略是针对BERT模型进行设计和验证的，而ViT模型在多分类任务上需要处理更复杂的类别间关系，导致剪枝后模型对类别区分能力下降。此外，ViT模型的注意力机制与BERT有所不同，可能需要针对性地调整剪枝策略。
+
+
+\paragraph{Exp 6. ViT 消融实验} 为了验证掩码重排和掩码调优对剪枝效果的贡献，我们在 ViT 模型上进行了消融实验。表~\ref{tab:ablation_results_1} 展示了不同剪枝阶段对模型性能的影响。
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lcccc|c}
+        \toprule
+        Dataset & CIFAR-10 & CIFAR-100 & \small{Fashion-MNIST} & \small{Mini-ImageNet} & Avg. Diff \\
+        \midrule
+        Mask Search & 96.48 & 66.69 & 94.62 & 72.07 & \\
+\footnotesize{+Mask Rearrangement} & 96.99 & 68.56 & 94.74 & 79.16 & +2.3975 \\
+\small\textbf{+Mask Tuning} & \textbf{97.31} & \textbf{74.47} & \textbf{94.86} & \textbf{83.08} & \textbf{+2.5675} \\
+        \bottomrule
+    \end{tabular}
+    \caption{消融实验结果}
+    \label{tab:ablation_results_1}
+\end{table}
+
+\subsubsection{迁移至 CNN 模型} 
+
+\paragraph{Exp 7. 迁移至CNN }我们在 CNN 模型中使用 MNIST 数据集进行测试，图~\ref{fig:cnn_accuracy_flops} 展示了随压缩率提升，模型准确率与 FLOPs 的变化情况。
 
 \begin{figure}[H]
     \centering
@@ -603,24 +600,24 @@ Transformer \cite{vaswani2017attention}模型自2017年提出以来，迅速成�
 
 实验结果表明：
 
-\begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]
-    \item 随着 compress 参数增大，CNN 模型 FLOPs 显著下降，表明剪枝策略有效降低了模型计算成本；
+\begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt, label=(\arabic*)]
+    \item 随着压缩率（compress 参数）增大，CNN 模型 FLOPs 显著下降，表明剪枝策略有效降低了模型计算成本；
     \item 模型准确率也呈下降趋势，但整体变化平稳，说明剪枝在轻量级任务（如 MNIST）上具有较强的鲁棒性；
     \item 在 compress 参数为 0.5 到 0.7 区间内，模型性能损失较小，剪枝收益较高，具备实际部署潜力；
-\end{itemize}
+\end{enumerate}
 
 \vspace{1em}
 综合来看，剪枝策略在 ViT 与 CNN 架构上均展现出较强的可迁移性和剪枝效果，尽管在任务复杂度较高的数据集上仍存在一定精度下降问题，但整体表现验证了该方法的跨结构适应能力。
 
-\section{亮点内容}
+\section{亮点}
 
 \subsection{论文实验的完整复现与验证}
 
-我们严格复现了论文在BERT和DistilBERT上的实验，取得了与原文高度一致的结果。在相同的实验设置下，我们的复现结果与论文原始数据的误差范围控制在0.5\%以内，充分验证了实验的可重复性。通过系统的消融实验，我们发现三个阶段的剪枝过程都对性能恢复起着关键作用，任何阶段的缺失都会导致模型性能的显著下降。
+我们严格复现了论文在BERT和DistilBERT上的实验，取得了与原文高度一致的结果。在相同的实验设置下，我们的复现结果与论文原始数据的误差较低，充分验证了实验的可重复性。通过系统的消融实验，我们发现三个阶段的剪枝过程都对性能恢复起着关键作用，任何阶段的缺失都会导致模型性能的显著下降。
 
 \subsection{方法在ViT和CNN上的创新迁移}
 
-本研究的一个重要突破是将该方法成功扩展到计算机视觉领域。在视觉Transformer(ViT)上的实验表明，在CIFAR-10数据集上实现50\%压缩率时，模型准确率仅下降4\%，展现出良好的适应性；然而在更复杂的CIFAR-100任务上，相同压缩率会导致约30\%的准确率下降，这提示我们方法对任务复杂度较为敏感。特别值得注意的是，该方法在传统CNN架构上也表现出色，在MNIST数据集上能够保持94.8\%的高准确率同时将模型大小缩减50\%，这一结果为CNN模型的高效压缩提供了新的思路。
+本研究的一个两点是将该方法成功扩展到计算机视觉领域。在视觉Transformer(ViT)上的实验表明，在CIFAR-10数据集上实现50\%压缩率时，模型准确率仅下降4\%，展现出良好的适应性；然而在更复杂的CIFAR-100任务上，相同压缩率会导致约30\%的准确率下降，这提示我们方法对任务复杂度较为敏感。特别值得注意的是，该方法在传统CNN架构上也表现出色，在MNIST数据集上能够保持94.8\%的高准确率同时将模型大小缩减50\%，这一结果为CNN模型的高效压缩提供了新的思路。
 
 \subsection{方法优势与局限的深度分析}
 
