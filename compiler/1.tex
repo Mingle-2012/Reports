@@ -346,7 +346,7 @@ subsection={format=\raggedright,
 词法分析 & 177 \\
 LL分析器（LL(1)） & 546 \\
 LR分析器（SLR(1)+LR(1)） & 993 \\
-semantic-analysis.cpp & 1331 \\
+语义分析 & 1331 \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -424,12 +424,12 @@ semantic-analysis.cpp & 1331 \\
 \chapter{测试用例}
 \label{sec:test}
 
-在这一部分中，我们介绍了在头歌测试用例的基础上，额外编写的3个测试用例，以验证其正确性。由于篇幅限制，对于每个部分，我们仅展示一个测试用例，更多的用例可以在\texttt{test}目录下找到。
+在这一部分中，我们介绍了在头歌测试用例的基础上，额外编写的测试用例，以验证其正确性。由于篇幅限制，对于每个部分，我们仅展示一个测试用例，更多的用例可以在\texttt{test}目录下找到。
 
-\section{验证Grammar基础性功能}
+\section{验证Grammar基础功能}
 \label{sec:test_grammar}
 
-为了验证我们实现的语法分析器的基础功能，即计算First集合、Follow集合的结果是否正确，我们编写了多个测试文法来验证。
+为了验证我们实现的语法分析器的基础功能，即计算First集合、Follow集合的结果是否正确，我们编写了测试文法来验证。
 
 \begin{lstlisting}[caption={测试文法},label={lst:grammar_test}]
 S -> A ;
@@ -455,7 +455,7 @@ C        ( ID NUM          ) ; + *
 
 \section{验证LL(1)分析器}
 
-我们仍以文法~\ref{lst:grammar_test}为例，验证LL(1)分析器的正确性。我们手动计算得到LL(1)分析表如表~\ref{tab:parse-table}所示，可以验证一致。
+我们仍以文法~\ref{lst:grammar_test}为例，验证LL(1)分析器的正确性。我们手动计算得到LL(1)分析表如表~\ref{tab:parse-table}所示，可以验证与代码运行结果一致。
 
 \begin{table}[H]
     \small
@@ -482,7 +482,7 @@ C        ( ID NUM          ) ; + *
 \end{table}
 
 \section{验证LR(1)分析器}
-我们也使用文法~\ref{lst:grammar_test}来验证LR(1)分析器的正确性。我们手动计算得到LR(1)分析表如表~\ref{tab:lr1-table}所示，可以验证一致。
+我们也使用文法~\ref{lst:grammar_test}来验证LR(1)分析器的正确性。我们手动计算得到LR(1)分析表如表~\ref{tab:lr1-table}所示，可以验证与代码运行结果一致。
 
 \begin{table}[H]
 \small
@@ -516,7 +516,7 @@ C        ( ID NUM          ) ; + *
 \end{longtable}
 \end{table}
 
-\chapter{总结与展望}
+\chapter{总结}
 \label{sec:conclusion}
 
 本次编译原理实践项目让我对编译器有了更深入的理解。通过独立实现语法分析、LL(1)、SLR(1)、LR(1)和语义分析，最终成品代码数千行，不仅巩固了理论知识，也锻炼了解决复杂问题的能力。
