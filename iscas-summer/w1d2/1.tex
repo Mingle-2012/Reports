@@ -1,0 +1,71 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyhead[L]{中国科学院大学软件所夏令营科研实习线上交流总结报告}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\pagestyle{plain}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+
+\title{\heiti 科研实习第二次线上交流总结报告}
+\author{武泽恺\footnote{华东师范大学，软件工程学院，本科三年级学生在读，email: zekaiwu@stu.ecnu.edu.cn}}
+\date{2025年7月25日}
+
+\begin{document}
+
+\maketitle
+
+\section{讨论内容}
+
+我们首先讨论了论文的研读和总结工作，随后确定了下一步的方向和下一次交流时间。
+
+首先，我们讨论了论文\textit{Toward Understanding Bugs in Vector Database Management Systems}的背景、方法和贡献。该论文通过对主流向量数据库管理系统中的错误进行分析，将错误的症状、根源和解决方法进行了分类，并进行了系统之间的横向对比。文章也为向量数据库管理系统的开发者和测试人员提出了许多宝贵的真知灼见，具有重要的参考价值。
+
+随后，我们讨论了下一步的实践内容。在这篇文章的基础上，我们针对“系统崩溃”这一问题，设计一个测试方法。具体的思路如下：
+
+\begin{enumerate}[itemsep=0pt]
+    \item 选择并安装一个知名度高、开源的向量数据库系统（如Milvus），学习了解简单的使用方法（插入语句、查询语句等）。
+    \item 拉取论文中提供的数据集，找几个崩溃的测试用例，分析其输入数据和查询语句的特点。
+    \item 编写代码实现测试输入数据的生成，并通过代码将生成的数据插入到向量数据库中。
+    \item 编写代码实现测试查询语句的生成，并通过代码将查询语句发送到向量数据库中。
+    \item 编写输入语句、查询语句时，重点考虑边界情况、异常情况等。
+    \item 记录系统的运行情况，并收集系统所产生的查询结果，与Ground Truth进行对比，并记录系统是否出现崩溃等异常情况。
+\end{enumerate}
+
+同时，老师还提供了一篇\textit{Detecting Schema-Related Logic Bugs in Relational DBMSs via Equivalent Database Construction}以供参考在传统关系型数据库中的测试方法、测试语句生成方法等，我们可以借鉴其中的一些思路和方法，来设计针对向量数据库的测试方法。
+
+最后，我们讨论确定了下一次交流的时间。我们计划在7月29日（星期二）进行第三次交流会议，届时将讨论测试方法的设计和初步实现情况。
+
+\section{未来计划}
+
+在接下来的一周中，我将按照以下计划进行：
+
+\begin{itemize}
+    \item 第一周末+第二周 (7.25-8.1)：
+    \begin{itemize}
+        \item 设计一个针对第二篇论文中所发现某一个具体问题的测试方法。
+        \item 选择一个知名度高、开源的向量数据库系统，将我们的方法实现一个初步的版本，并测试其有效性。
+        \item 我们将在7.29日的交流会议上讨论测试方法的设计和初步实现情况。
+    \end{itemize}
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,55 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyhead[L]{中国科学院大学软件所夏令营科研实习线上交流总结报告}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\pagestyle{plain}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+
+\title{\heiti 科研实习第四次线上交流总结报告}
+\author{武泽恺\footnote{华东师范大学，软件工程学院，本科三年级学生在读，email: zekaiwu@stu.ecnu.edu.cn}}
+\date{2025年8月1日}
+
+\begin{document}
+
+\maketitle
+
+\section{讨论内容}
+
+本次交流中，我们首先讨论了在第三次讨论以来的进展情况，随后老师给出了后续研究的指导性意见和建议。
+
+\begin{enumerate}[noitemsep, topsep=0pt]
+    \item 首先，我延续上次的工作，继续测试向量数据库系统Milvus的崩溃问题。将上次针对PR\#37686\footnote{\url{https://github.com/milvus-io/milvus/pull/37686}}中并行和多分区场景下的测试所发现的崩溃问题继续进行复现，在运行了104个配置组合（参数/分区数/线程数）后，系统仍然运行稳定，没有出现崩溃现象。
+    \item 我们尝试在原论文的数据集中寻找一个更容易触发的崩溃问题进行复现。在尝试了多个PR的复现后，最后在PR\#37064\footnote{\url{https://github.com/milvus-io/milvus/pull/37064}}、PR\#37294\footnote{\url{https://github.com/milvus-io/milvus/pull/37294}}和PR\#37145\footnote{\url{https://github.com/milvus-io/milvus/pull/37145}}中选择了PR\#37064进行完整复现尝试。我介绍了复现的过程，包括本地编译Milvus、编写测试脚本等。
+    \item 按照老师提出的建议，我总结了向量数据库系统Milvus所提供的常见API/指令。
+\end{enumerate}
+
+老师对目前的工作表示了肯定，并建议进一步的研究可以基于得到的API文档来设计测试方法，以确保测试覆盖到系统的完整功能空间；应该考虑到生成指令顺序的随机性和有效性，避免生成无效的指令组合。
+
+最后，我们讨论了本科毕设相关的事情，老师提供了未来发展的多种选择，给出了相应的指导性建议，并鼓励我继续深入研究。
+
+\section{总结}
+
+非常有幸能够参加中国科学院大学软件所的科研实习项目，初步尝试参与到向量数据库系统的测试工作中。通过与老师多次的交流和讨论，我对数据库系统的测试方法有了较为深刻的理解。通过针对Milvus数据库的缺陷设计测试用例、优化测试流程，并在老师的指导意见下，我对向量数据库的测试方法有了一个初步的思路。此次实践不仅提升了我的工程能力，也让我对数据库系统的底层原理有了更深刻的理解。本次实践的原材料都已经上传到Gitee\footnote{\url{https://gitee.com/tcse-intern/vdbms-testing}}。
+
+\end{document}

@@ -11,7 +11,7 @@
   <h3 align="center">Latex</h3>
 
   <p align="center">
-    Latex Repository for Computer Science courses.
+    Latex Repository for Software Engineering courses.
   </p>
 </div>
 
@@ -19,6 +19,3 @@
 
 Distributed under the MIT License. See `LICENSE.txt` for more information. [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>

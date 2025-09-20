@@ -1,0 +1,68 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyhead[L]{中国科学院大学软件所夏令营科研实习线上交流总结报告}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\pagestyle{plain}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+
+\title{\heiti 科研实习第一次线上交流总结报告}
+\author{武泽恺\footnote{华东师范大学，软件工程学院，本科三年级学生在读，email: zekaiwu@stu.ecnu.edu.cn}}
+\date{2025年7月22日}
+
+\begin{document}
+
+\maketitle
+
+\section{引言}
+在本次夏令营中，我有幸参与了中国科学院大学软件所的科研实习项目。本次实践所选择的主题是“向量数据库系统自动化测试用例生成方法”，旨在通过自动化测试提升向量数据库系统的可靠性和性能。
+
+\section{讨论内容}
+
+我们首先讨论了两周的科研实习安排，包括实践内容、交流方式以及预期成果。
+
+实践内容方面，在未来的两周时间里，我将主要研读两篇重点论文（\textit{Towards Reliable Vector Database Management Systems: A Software Testing Roadmap for 2030}\textsuperscript{1} 和 \textit{Toward Understanding Bugs in Vector Database Management Systems}\textsuperscript{2}），从用户的角度去看待向量数据库系统中可能存在的问题，并重点总结第二篇文章的工作和贡献，以PPT的形式撰写一篇总结报告。
+
+交流方式方面，我们将通过线上会议的方式进行定期交流。交流结束后，撰写一篇讨论总结，并在第二天中午之前反馈给老师，以便于加深讨论内容的理解和记忆。下一次交流定于7月25日，届时讨论对论文的理解。
+
+预期成果方面，本次科研实践将作为一个探索性的尝试，主要目的是增进师生之间的交流，积累科研经验。其次，在阅读并总结了相关文献后，需要针对文章中所发现的某一类问题来设计一个测试方法，实现一个初步的版本。同时，这次的课题也可以成为未来科研工作的一个研究方向。
+
+\section{未来计划}
+
+在接下来的两周中，我将按照以下计划进行：
+
+\begin{itemize}
+    \item 第一周 (7.22-7.25)：
+    \begin{itemize}
+        \item 研读两篇论文，重点总结第二篇论文\textsuperscript{2}的工作和贡献。
+        \item 将总结的内容汇总成第二次交流会议的PPT。
+        \item 7.25日（星期五）进行第二次交流会议，讨论对论文的理解和总结，并在会议后撰写讨论总结。
+    \end{itemize}
+    \item 第二周 (7.28-8.1)：
+    \begin{itemize}
+        \item 设计一个针对第二篇论文中所发现某一个具体问题的测试方法。
+        \item 选择一个知名度高、开源的向量数据库系统，将我们的方法实现一个初步的版本，并测试其有效性。
+        \item 我们将进行第三次和第四次交流会议，定期汇报进展和讨论遇到的问题。
+    \end{itemize}
+\end{itemize}
+
+\end{document}

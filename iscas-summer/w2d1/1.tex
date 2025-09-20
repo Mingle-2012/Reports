@@ -1,0 +1,74 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyhead[L]{中国科学院大学软件所夏令营科研实习线上交流总结报告}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\pagestyle{plain}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+
+\title{\heiti 科研实习第三次线上交流总结报告}
+\author{武泽恺\footnote{华东师范大学，软件工程学院，本科三年级学生在读，email: zekaiwu@stu.ecnu.edu.cn}}
+\date{2025年7月29日}
+
+\begin{document}
+
+\maketitle
+
+\section{讨论内容}
+
+本次交流中，我们首先讨论了在第二次讨论以来的进展情况，随后老师给出了指导性意见和建议，并确定了下一次交流的时间。
+
+首先，我介绍了测试向量数据库系统的初步实现情况。我们选择了Milvus这一热门开源向量数据库作为测试对象，并针对其GitHub仓库上的一个PR（PR\#37686\footnote{\url{https://github.com/milvus-io/milvus/pull/37686}}, Issue \#37649\footnote{\url{https://github.com/milvus-io/milvus/issues/37649}}）设计了一个测试方法来检测系统在并发查询和多分区场景下的崩溃问题。
+
+\begin{enumerate}[noitemsep, topsep=0pt]
+    \item \textbf{测试工具架构}：简单介绍了整个测试工具的架构设计，包括主工具类、数据集管理器、配置管理器、系统监控器、Milvus数据库。
+    \item \textbf{测试流程设计}：包括数据集的获取（真实数据+随机生成）、不同配置组合的生成（如分区数量、并发查询数、索引类型、索引参数、搜索参数等）、测试执行（插入数据、执行查询、监控系统状态）等。
+    \item \textbf{测试配置设置}：包括数据集的大小、维度、分区数量、并发查询数、索引类型、索引参数、搜索参数等。
+    \item \textbf{测试结果分析}：由于运行全部配置组合耗时较长，目前仅完成了部分配置的测试。初步结果显示，系统运行稳定，没有出现多线程崩溃的情况，并得到了QPS变化曲线。
+\end{enumerate}
+
+考虑到向量数据库系统不同于传统数据库系统，其查询结果具有不确定性，我在未来考虑增加对查询结果的验证机制，以确保测试的有效性。
+
+随后，老师给出了两个方面的指导性建议：
+
+\begin{enumerate}[noitemsep, topsep=0pt]
+    \item \textbf{复现简单情景。} 由于当前选的问题需要并行条件下触发，不确定性因素较大，可以尝试在原论文的数据集中找一个相对简单、更容易触发的崩溃问题，在特定的配置下，通过一系列简单操作即可复现崩溃场景。尝试去寻找这样的崩溃场景进行复现。
+    \item \textbf{总结VDBMS指令。} 总结向量数据库系统所提供的常见API/指令，以供我们的测试方法能够尽可能地覆盖到系统完整的功能空间（如，在该向量数据库系统提供的所有功能范围上，我们的测试工具可以随机执行指令，来发现潜在的缺陷）。
+\end{enumerate}
+
+最后，我们讨论确定了下一次交流的时间为8月1日（星期五）下午1点半。
+
+\section{未来计划}
+
+在接下来的三天中，我将按照以下计划进行：
+
+\begin{itemize}
+    \item 第二周 周二至周五 (7.29-8.1)：
+    \begin{itemize}
+        \item 首先，我将继续完善测试工具，尝试在原论文的数据集中寻找一个更容易触发的崩溃问题进行复现。
+        \item 其次，我将总结向量数据库系统所提供的常见API/指令，以便测试方法能够覆盖系统的完整功能空间。
+        \item 我们将在8.1日的交流会议上讨论进一步的进展和结果。
+    \end{itemize}
+\end{itemize}
+
+\end{document}
