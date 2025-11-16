@@ -1,0 +1,172 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage{listings}
+\usepackage[a4paper, body={18cm,22cm}]{geometry}
+\usepackage{amsmath,amssymb,amstext,wasysym,enumerate,graphicx}
+\usepackage{float,abstract,booktabs,indentfirst,amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage[most, skins, breakable, theorems]{tcolorbox}
+\usepackage{accsupp}
+\usepackage[bottom]{footmisc}
+\usepackage{subcaption}
+\usepackage{logicproof}
+% \usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage[xetex]{hyperref}
+\usepackage{fontspec}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\usetikzlibrary{arrows.meta}
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+\setlength{\parindent}{2em}
+\setmonofont{Consolas}
+\setCJKmonofont{黑体}
+% \setmainfont{Times New Roman}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+            bookmarksopen=true,breaklinks=true}
+\lstset{
+    % language = C,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle = \small\emptyaccsupp, % 行号字体
+    numbersep = -14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	frame = single, 
+	showspaces = false, % 不显示空格
+    showstringspaces = false,
+	columns = fixed, % 字间距固定
+    literate=
+        {^-}{{{\color{black}\textbf{\color{red}-}}\colorbox{red!30}{\phantom{XX}}}}{1}
+        {^+}{{{\color{black}\textbf{\color{green}+}}\colorbox{green!30}{\phantom{XX}}}}{1},
+}
+
+\raggedbottom
+
+\title{\heiti\textbf{计算机逻辑基础}}
+\author{第五次作业 \\ 
+武泽恺 10225101429
+}
+\date{2025年11月16日}
+
+\begin{document}
+\maketitle
+
+
+\section*{Assignment 5-1}
+\subsection*{Problem} 
+Read the following specification: Alice, Bob, and Charles live in an apartment. One day Alice is found dead in her room. Please translate the following clues into predicate logic formulas:
+
+\begin{enumerate}
+    \item A killer always hates, and is no richer than, his victim.
+    \item Charles hates no one that Alice hates.
+    \item Alice hates everybody except Bob.
+    \item Bob hates everyone who is either not richer than Alice or hated by Alice.
+    \item No one hates everyone.
+    \item No one is richer than himself or herself. Who is richer can be determined for any two different persons.
+\end{enumerate}
+
+Guess who is the killer and verify your conclusion with semantical entailment.
+
+\subsection*{Answer}
+
+我们可以用$\{x, y, z\}$表示任意人，用常量符号 $\{a, b, c\}$ 分别表示 Alice、Bob 和 Charles。
+\[
+K(x,y): x \text{ killed } y, \qquad 
+H(x,y): x \text{ hates } y, \qquad 
+R(x,y): x \text{ is richer than } y.
+\]
+
+我们可以将题目中的线索翻译为以下谓词逻辑公式：
+\begin{align}
+(1)\quad &\forall x \forall y \bigl(K(x,y) \rightarrow (H(x,y) \land \neg R(x,y))\bigr). \\[4pt]
+(2)\quad &\forall z\bigl(H(a,z) \rightarrow \neg H(c,z)\bigr). \\[4pt]
+(3)\quad &\forall z\bigl(H(a,z) \leftrightarrow z \neq b\bigr). \\[4pt]
+(4)\quad &\forall z\bigl((\neg R(z,a)\lor H(a,z)) \rightarrow H(b,z)\bigr). \\[4pt]
+(5)\quad &\forall x\, \exists y\, \neg H(x,y). \\[4pt]
+(6)\quad &\forall x\, \neg R(x,x), 
+\qquad 
+\forall x\forall y\,(x\neq y \rightarrow (R(x,y)\lor R(y,x))). \\[4pt]
+&\exists x\,K(x,a) \qquad\text{(Alice 被杀)}
+\end{align}
+
+我们可以推测，Alice 是唯一可能杀死她自己的人。
+
+\begin{proof}
+从公理 (3) 中令 $z=a$ 得到 $H(a,a)$（Alice 恨 Alice）。
+接着，公理 (2) 蕴含 $\neg H(c,a)$；因此 Charles 不恨 Alice。
+根据公理 (1)，任何杀人者必须恨其受害者，所以 Charles 不可能是杀人者。
+
+假设 $K(x,a)$ 对某个 $x$ 成立（即某人杀了 Alice）。
+则由公理 (1) 可知，我们得到 $H(x,a)$ 且 $\neg R(x,a)$。
+
+考虑 $x=b$ (Bob)。假设 $\neg R(b,a)$ 成立，那么由公理 (4) 可知，对于任意 $z$，因为对于所有 $z\neq b$，公理 (3) 保证 $H(a,z)$ 成立；而对于 $z=b$，$\neg R(b,a)$ 成立。因此，前提 $(\neg R(z,a)\lor H(a,z))$ 都为真，公理 (4) 蕴含 $H(b,z)$ 对所有 $z$ 都成立（Bob 恨所有人）。
+这与公理 (5) 矛盾，公理 (5) 表明没有人恨所有人。
+因此，Bob 不可能满足 $\neg R(b,a)$，从而不能是杀人者。
+
+因此，Bob 和 Charles 都不能是杀人者；剩下的唯一嫌疑人是 Alice 自己。
+\end{proof}
+
+
+\section*{Assignment 5-2}
+
+\subsection*{(a)}
+$$
+\neg \forall x. P(x) \equiv \exists x. \neg P(x)
+$$
+
+我们的目标是证明对任意模型 $M$，都有
+$$
+\forall M. (M \models \neg \forall x. P(x) \iff M \models \exists x. \neg P(x))
+$$
+
+\begin{proof}
+    \begin{align*}
+M \models \neg \forall x. P(x)
+&\equiv_{df} \neg \forall a. M, l[x \mapsto a] \models P(x) \iff \exists a. M, l[x \mapsto a] \models \neg P(x) \\
+&\equiv_{df} M \models \exists x. \neg P(x)
+\end{align*}
+\end{proof}
+
+\subsection*{(b)}
+$$
+\exists x \forall y. P(x,y) \not\equiv \forall y \exists x. P(x,y)
+$$
+
+我们的目标是找到一个模型 $M$，使得
+\[
+\exists M. M \models \forall y \exists x. P(x, y) \And M \not\models \exists x \forall y. P(x, y)
+\]
+
+\begin{proof}
+
+我们选取论域 $D = \{0, 1\}$，并定义谓词 $P$ 的解释 $P^M = \{(0, 0), (1, 1)\}$，即$P(0, 0)$ 和 $P(1, 1)$ 为真；$P(0, 1)$ 和 $P(1, 0)$ 为假。
+
+1. 验证 $\forall y \exists x. P(x, y)$ 为真:
+\begin{itemize}
+    \item 当 $y=0$ 时，我们选择 $x=0$，则 $P(0, 0)$ 成立。
+    \item 当 $y=1$ 时，我们选择 $x=1$，则 $P(1, 1)$ 成立。
+\end{itemize}
+由于论域中所有的 $y$ 都找到了对应的 $x$ 使得关系成立，因此 $M \models \forall y \exists x. P(x, y)$ 为真。
+
+2. 验证 $\exists x \forall y. P(x, y)$ 为假:
+\begin{itemize}
+    \item 检查 $x=0$: $P(0, 0)$ 成立，但 $P(0, 1)$ 在 $M$ 中为假。因此，$x=0$ 失败。
+    \item 检查 $x=1$: $P(1, 1)$ 成立，但 $P(1, 0)$ 在 $M$ 中为假。因此，$x=1$ 失败。
+\end{itemize}
+由于 $D$ 中不存在一个 $x$ 能使得 $P(x, y)$ 对所有 $y$ 都成立，因此 $M \not\models \exists x \forall y. P(x, y)$ 为假。
+\end{proof}
+
+
+\end{document}
