@@ -1,0 +1,150 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage{listings}
+\usepackage[a4paper, body={18cm,22cm}]{geometry}
+\usepackage{amsmath,amssymb,amstext,wasysym,enumerate,graphicx}
+\usepackage{float,abstract,booktabs,indentfirst,amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+\usepackage{accsupp}
+\usepackage[bottom]{footmisc}
+\usepackage{subcaption}
+\usepackage{logicproof}
+% \usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage[xetex]{hyperref}
+\usepackage{fontspec}
+\usetikzlibrary{arrows.meta}
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+\setlength{\parindent}{2em}
+\setmonofont{Consolas}
+\setCJKmonofont{黑体}
+% \setmainfont{Times New Roman}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+            bookmarksopen=true,breaklinks=true}
+\lstset{
+    % language = C,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle = \small\emptyaccsupp, % 行号字体
+    numbersep = -14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	frame = single, 
+	showspaces = false, % 不显示空格
+    showstringspaces = false,
+	columns = fixed, % 字间距固定
+    literate=
+        {^-}{{{\color{black}\textbf{\color{red}-}}\colorbox{red!30}{\phantom{XX}}}}{1}
+        {^+}{{{\color{black}\textbf{\color{green}+}}\colorbox{green!30}{\phantom{XX}}}}{1},
+}
+
+\raggedbottom
+
+\title{\heiti\textbf{计算机逻辑基础}}
+\author{第三次作业 \\ 
+武泽恺 10225101429
+}
+\date{2025年10月24日}
+
+\begin{document}
+\maketitle
+
+\section*{Completeness Proof Cases}
+
+\begin{align*}
+1.\quad & \Phi_1 \land \Phi_2 \vdash \Phi_1 \lor \Phi_2 \\[3pt]
+&\text{证明：由合取消解得 } \Phi_1，\ \text{再由析取引入得 } \Phi_1 \lor \Phi_2。\\[6pt]
+2.\quad & \Phi_1 \land \neg \Phi_2 \vdash \Phi_1 \lor \Phi_2 \\[3pt]
+&\text{证明：由合取消解得 } \Phi_1，\ \text{再由析取引入得 } \Phi_1 \lor \Phi_2。\\[6pt]
+3.\quad & \neg \Phi_1 \land \Phi_2 \vdash \Phi_1 \lor \Phi_2 \\[3pt]
+&\text{证明：由合取消解得 } \Phi_2，\ \text{再由析取引入得 } \Phi_1 \lor \Phi_2。\\[6pt]
+4.\quad & \neg \Phi_1 \land \neg \Phi_2 \vdash \neg(\Phi_1 \lor \Phi_2) \\[3pt]
+&\text{证明：假设 } (\Phi_1 \lor \Phi_2)，\ 
+  \text{则由析取消解分两种情况：}\\
+&\quad (i)\ \Phi_1 \Rightarrow \text{与 } \neg \Phi_1 \text{ 矛盾}；\\
+&\quad (ii)\ \Phi_2 \Rightarrow \text{与 } \neg \Phi_2 \text{ 矛盾}。\\
+&\text{两种情况皆导致矛盾，因此 } \neg(\Phi_1 \lor \Phi_2)。\\[8pt]
+5.\quad & \Phi_1 \land \Phi_2 \vdash \Phi_1 \to \Phi_2 \\[3pt]
+&\text{证明：假设 } \Phi_1，\ \text{由合取消解得 } \Phi_2，\ 
+  \text{由条件引入得 } \Phi_1 \to \Phi_2。\\[6pt]
+6.\quad & \Phi_1 \land \neg \Phi_2 \vdash \neg(\Phi_1 \to \Phi_2) \\[3pt]
+&\text{证明：由条件的等价式 } \Phi_1 \to \Phi_2 \equiv \neg \Phi_1 \lor \Phi_2，\\
+&\text{得其否定为 } \neg(\Phi_1 \to \Phi_2) \equiv \Phi_1 \land \neg \Phi_2。\\
+&\text{因此从前提即可直接得到结论。}\\[6pt]
+\end{align*} 
+
+\begin{align*}
+7.\quad & \neg \Phi_1 \land \Phi_2 \vdash \Phi_1 \to \Phi_2 \\[3pt]
+&\text{证明：假设 } \Phi_1，\ \text{则 } \Phi_2 \text{ 已由前提成立}，\ 
+  \text{因此 } \Phi_1 \to \Phi_2。\\[6pt]
+8.\quad & \neg \Phi_1 \land \neg \Phi_2 \vdash \Phi_1 \to \Phi_2 \\[3pt]
+&\text{证明：在经典逻辑中，当前件 } \Phi_1 \text{ 为假时，} 
+  \Phi_1 \to \Phi_2 \text{ 恒真。}\\
+&\text{因此由 } \neg \Phi_1 \text{ 立即推出 } \Phi_1 \to \Phi_2。
+\end{align*}
+
+\section*{Conversion to CNF}
+
+\[
+\Phi = \neg ( r \land ( \neg ( q \to (\neg p \to (q \land r)) ) ) )
+\]
+
+$$
+= CNF((NNF(IMPL\_FREE(\Phi))))
+$$
+
+\textbf{Step 1: IMPL\_FREE}
+\[
+IMPL\_FREE(\neg ( r \land ( \neg ( q \to (\neg p \to (q \land r)) ) ) ))
+\]
+\[
+= \neg ( r \land ( \neg ( \neg q \lor (p \lor (q \land r)) ) ) )
+\]
+
+\textbf{Step 2: NNF}
+\[
+NNF(\neg ( r \land ( \neg ( \neg q \lor (p \lor (q \land r)) ) ) ))
+\]
+\[
+= \neg r \lor \neg ( \neg ( \neg q \lor (p \lor (q \land r)) ) )
+\]
+\[
+= \neg r \lor ( \neg q \lor (p \lor (q \land r)))
+\]
+
+\textbf{Step 3: CNF}
+
+\[
+= CNF(\neg r \lor ( \neg q \lor (p \lor (q \land r))))
+\]
+\[
+= DISTR(CNF(\neg r), CNF ( \neg q \lor (p \lor (q \land r))))
+\]
+\[
+= DISTR(\neg r, DISTR(\neg q, CNF(p \lor (q \land r))))
+\]
+\[
+= DISTR(\neg r, DISTR(\neg q, DISTR(p, q \land r)))
+\]
+\[
+= DISTR(\neg r, DISTR(\neg q, (p \lor q) \land (p \lor r)))
+\]
+\[
+= DISTR(\neg r, (\neg q \lor p \lor q) \land (\neg q \lor p \lor r))
+\]
+\[
+= (\neg r \lor \neg q \lor p \lor q) \land (\neg r \lor \neg q \lor p \lor r)
+\]
+\end{document}

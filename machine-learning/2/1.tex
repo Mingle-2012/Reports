@@ -1,0 +1,225 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage[a4paper, body={18cm,22cm}]{geometry}
+\usepackage{amsmath,amssymb,amstext,wasysym,enumerate,graphicx}
+\usepackage{float,abstract,booktabs,indentfirst,amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+\usepackage{accsupp}
+\usepackage[bottom]{footmisc}
+\usepackage{subcaption}
+\usepackage{logicproof}
+% \usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage[xetex]{hyperref}
+\usepackage{fontspec}
+\usepackage{listingsutf8}
+\usepackage{xcolor}
+\usetikzlibrary{arrows.meta}
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+\setlength{\parindent}{2em}
+\setmonofont{Consolas}
+\setCJKmonofont{黑体}
+% \setmainfont{Times New Roman}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+            bookmarksopen=true,breaklinks=true}
+\lstset{
+    % language = C,
+    inputencoding=utf8,
+    extendedchars=false,
+    showstringspaces=false,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle=\emptyaccsupp,
+    numbersep = 14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	% frame = shadowbox, % 用(带影子效果)方框框住代码块
+	frame = single, % 用(带影子效果)方框框住代码块
+	showspaces = false, % 不显示空格
+	columns = fixed, % 字间距固定
+  framesep=1em
+} 
+\lstset{
+    sensitive=true,
+    moreemph={ASSERT, NULL}, emphstyle=\color{red}\bfseries,
+    moreemph=[2]{int64_t, uint32_t, tid_t, uint8_t, int16_t, uint16_t, int32_t, size_t}, emphstyle=[2]\color{purple}\bfseries,
+    showspaces = false, % 不显示空格
+    }
+
+\raggedbottom
+
+\title{\heiti\textbf{机器学习实践报告}}
+\author{第二次实验 \\ 
+武泽恺 10225101429
+}
+\date{2025年11月8日}
+
+
+
+\begin{document}
+\maketitle
+
+\section{实验目的}
+\begin{itemize}
+    \item 理解线性回归的基本原理；
+    \item 学习Scikit-learn的使用；
+    \item 掌握模型训练、预测和评估流程。
+\end{itemize}
+
+\section{实验环境}
+\begin{itemize}
+    \item Python 3.11.7
+    \item 主要库：
+    \begin{itemize}
+        \item \texttt{scikit-learn}
+        \item \texttt{numpy}
+        \item \texttt{matplotlib}
+    \end{itemize}
+\end{itemize}
+
+\section{实验内容与步骤}
+
+\subsection{导入模块}
+使用 \texttt{LinearRegression}、\texttt{mean\_squared\_error} 等模块：
+\begin{lstlisting}[language=Python]
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+\end{lstlisting}
+
+\subsection{生成数据}
+生成符合线性关系 $y = -5x + 0.1$ 的模拟数据，并加入噪声：
+\begin{lstlisting}[language=Python]
+X = 2 * np.random.rand(100, 1)
+y_true = -5 * X + 0.1
+noise = np.random.randn(100, 1) * 0.5
+y = y_true + noise
+\end{lstlisting}
+
+\subsection{构建模型}
+使用Scikit-learn提供的线性回归模型：
+\begin{lstlisting}[language=Python]
+model = LinearRegression()
+\end{lstlisting}
+
+\subsection{模型训练}
+\begin{lstlisting}[language=Python]
+model.fit(X, y)
+\end{lstlisting}
+由于Scikit-learn的LinearRegression不需要手动设置epochs和batch\_size，我们可以理解为一次全量训练。
+
+\subsection{模型预测与参数查看}
+查看模型参数及预测结果：
+\begin{lstlisting}[language=Python]
+print("截距:", model.intercept_)
+print("系数:", model.coef_)
+y_pred = model.predict(X)
+\end{lstlisting}
+
+\subsection{模型评估}
+计算均方误差(MSE)与$R^2$分数：
+\begin{lstlisting}[language=Python]
+mse = mean_squared_error(y, y_pred)
+r2 = r2_score(y, y_pred)
+\end{lstlisting}
+
+\subsection{结果可视化}
+绘制真实函数、带噪声样本与预测线：
+\begin{lstlisting}[language=Python]
+plt.scatter(X, y, color='blue', label="带噪声样本")
+plt.plot(X, y_true, color='green', label="真实函数")
+plt.plot(X, y_pred, color='red', label="预测结果")
+plt.legend()
+plt.show()
+\end{lstlisting}
+
+\section{实验结果与分析}
+
+\subsection{模型参数}
+实验得到的模型参数如下：
+\[
+\hat{y} = -5.11494331x + 0.20754808
+\]
+可以看到参数接近真实值 $y = -5x + 0.1$，说明模型拟合相对良好。
+
+\subsection{模型性能}
+\begin{itemize}
+    \item 均方误差 (MSE)：0.2016461409917634
+    \item $R^2$ 分数：0.9784809821540084
+\end{itemize}
+说明模型的预测性能非常优秀。
+
+\subsection{可视化结果}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{Figure_1.png}
+\caption{线性回归结果可视化}
+\end{figure}
+
+可以看到模型拟合线（红色）与真实线（绿色）几乎重合，说明训练成功。
+
+\section{实验结论}
+本实验通过Scikit-learn的\texttt{LinearRegression}实现了线性回归模型的训练与评估，我掌握了：
+\begin{itemize}
+    \item 线性回归模型的基本原理；
+    \item 模型训练、预测与评估流程；
+    \item 均方误差与$R^2$指标的意义；
+    \item 使用Matplotlib进行结果可视化。
+\end{itemize}
+
+
+\section{实验总结}
+结合了上课老师所讲授的内容，通过本实验，我熟悉了 numpy 的数组操作、pandas 的数据处理以及 matplotlib 的可视化绘制。  
+
+\newpage
+\appendix
+\section{完整代码}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+np.random.seed(42)
+X = 2 * np.random.rand(100, 1)
+y_true = -5 * X + 0.1
+noise = np.random.randn(100, 1) * 0.5
+y = y_true + noise
+
+model = LinearRegression()
+model.fit(X, y)
+print("模型截距:", model.intercept_)
+print("模型系数:", model.coef_)
+
+y_pred = model.predict(X)
+mse = mean_squared_error(y, y_pred)
+r2 = r2_score(y, y_pred)
+print("均方误差:", mse)
+print("R² 分数:", r2)
+
+plt.figure(figsize=(4, 4))
+plt.scatter(X, y, color='blue', label="样本数据", alpha=0.6)
+plt.plot(X, y_true, color='green', label="y = -5x + 0.1")
+plt.plot(X, y_pred, color='red', linewidth=2, label="模型预测线")
+plt.title("线性回归拟合-武泽恺-10225101429")
+plt.xlabel("x", fontsize=12)
+plt.ylabel("y", rotation=0, fontsize=12)
+plt.legend()
+plt.show()
+\end{lstlisting}
+
+\end{document}

@@ -1,0 +1,289 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage[a4paper, body={18cm,22cm}]{geometry}
+\usepackage{amsmath,amssymb,amstext,wasysym,enumerate,graphicx}
+\usepackage{float,abstract,booktabs,indentfirst,amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+\usepackage{accsupp}
+\usepackage[bottom]{footmisc}
+\usepackage{subcaption}
+\usepackage{logicproof}
+% \usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage[xetex]{hyperref}
+\usepackage{fontspec}
+\usepackage{listingsutf8}
+\usepackage{xcolor}
+\usetikzlibrary{arrows.meta}
+\newcommand\emptyaccsupp[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+\setlength{\parindent}{2em}
+\setmonofont{Consolas}
+\setCJKmonofont{黑体}
+% \setmainfont{Times New Roman}
+\hypersetup{CJKbookmarks=true,colorlinks=true,citecolor=blue,%
+            linkcolor=blue,urlcolor=blue,bookmarksnumbered=true,%
+            bookmarksopen=true,breaklinks=true}
+\lstset{
+    % language = C,
+    inputencoding=utf8,
+    extendedchars=false,
+    showstringspaces=false,
+    xleftmargin = 3em,xrightmargin = 3em, aboveskip = 1em,
+	backgroundcolor = \color{white}, % 背景色
+	basicstyle = \small\ttfamily, % 基本样式 + 小号字体
+	rulesepcolor= \color{gray}, % 代码块边框颜色
+	breaklines = true, % 代码过长则换行
+	numbers = left, % 行号在左侧显示
+	numberstyle=\emptyaccsupp,
+    numbersep = 14pt, 
+    keywordstyle=\color{purple}\bfseries, % 关键字颜色
+    commentstyle =\color{red!50!green!50!blue!60}, % 注释颜色
+    stringstyle = \color{red}, % 字符串颜色
+    morekeywords={ASSERT, int64_t, uint32_t},
+	% frame = shadowbox, % 用(带影子效果)方框框住代码块
+	frame = single, % 用(带影子效果)方框框住代码块
+	showspaces = false, % 不显示空格
+	columns = fixed, % 字间距固定
+  framesep=1em
+} 
+\lstset{
+    sensitive=true,
+    moreemph={ASSERT, NULL}, emphstyle=\color{red}\bfseries,
+    moreemph=[2]{int64_t, uint32_t, tid_t, uint8_t, int16_t, uint16_t, int32_t, size_t}, emphstyle=[2]\color{purple}\bfseries,
+    showspaces = false, % 不显示空格
+    }
+
+\raggedbottom
+
+\title{\heiti\textbf{机器学习实践报告}}
+\author{第三次实验 \\ 
+武泽恺 10225101429
+}
+\date{2025年11月16日}
+
+
+\begin{document}
+\maketitle
+
+\section{实验目的}
+\begin{itemize}
+    \item 理解逻辑回归的基本原理
+    \item 学习利用sklearn训练逻辑回归模型
+    \item 掌握模型训练、预测和评估流程
+\end{itemize}
+
+\section{实验环境}
+Python 3.11.7，主要库包括：numpy、matplotlib、scikit-learn。
+
+\section{实验内容与步骤}
+
+\subsection{数据准备}
+
+Iris数据集是模式识别最著名的数据集之一。数据集包含3类，每类50个实例，其中每个类都涉及一种鸢尾植物。 第一类与后两类可线性分离，后两类之间不能线性分离，所以本实验取前两类数据，做一个2分类数据集。我们使用 Iris 数据集前两类样本构建二分类任务，并取前两个特征进行可视化。
+
+\subsection{数据读取与处理}
+\begin{lstlisting}[language=Python]
+iris = datasets.load_iris()
+X = iris.data[:100, :2]
+y = iris.target[:100]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=11
+)
+\end{lstlisting}
+取 40–60 部分数据观察样本特征与标签，如图~\ref{fig:iris_sample} 所示。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{1.jpg}
+    \caption{Iris 数据集样本展示（花萼长、花萼宽）}
+    \label{fig:iris_sample}
+\end{figure}
+
+我们取样本的前两个属性进行2维可视化并输出，如图~\ref{fig:iris_2d} 所示。
+
+随后使用 train\_test\_split 将数据按 8:2 划分训练集与测试集，并设置随机种子 11。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{2.png}
+    \caption{Iris 数据集前2维}
+    \label{fig:iris_2d}
+\end{figure}
+
+\subsection{模型建立与训练}
+使用 sklearn.linear\_model.LogisticRegression 构建模型：
+
+\begin{lstlisting}[language=Python]
+model = LogisticRegression(
+    solver='lbfgs',
+    C=1.0,
+    max_iter=200
+)
+for _ in range(10):
+    model.fit(X_train, y_train)
+\end{lstlisting}
+
+为了模拟 epoch=10，我们通过循环多次训练模型。
+
+\subsection{模型预测与评估}
+测试集精度计算公式如下：
+
+\begin{equation}
+    \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+可以通过 accuracy\_score 计算。
+
+而F1值计算公式如下：
+
+\begin{equation}
+    F1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}
+
+F1 值则可以通过 f1\_score 计算。
+
+我们可以得到如图~\ref{fig:accuracy_f1} 所示的准确度与 F1 值。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{6.png}
+    \caption{准确度与 F1 值}
+    \label{fig:accuracy_f1}
+\end{figure}
+
+我们通过网格计算模型预测值并使用 contourf 绘制决策区域，如图~\ref{fig:decision_boundary} 所示。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{3.png}
+    \caption{决策边界}
+    \label{fig:decision_boundary}
+\end{figure}
+
+我们使用 TPR 与 FPR 计算并绘制 ROC 曲线，同时计算 AUC 值。AUC值的计算公式如下：
+
+\begin{equation}
+    \text{AUC} = \int_{0}^{1} \text{TPR} \, d(\text{FPR})
+\end{equation}
+
+如图~\ref{fig:roc_curve} 所示展示 ROC 曲线。
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{4.png}
+    \caption{ROC 曲线}
+    \label{fig:roc_curve}
+\end{figure}
+
+我们还计算了精确率与召回率并绘制精确率-召回率曲线展示模型在不同阈值下的性能。如图~\ref{fig:pr_curve} 所示。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{5.png}
+    \caption{PR 曲线}
+    \label{fig:pr_curve}
+\end{figure}
+
+\section{实验结果}
+模型测试集准确率为 1.0，F1 值也为 1.0，说明模型在测试集上表现完美。决策边界图显示两类样本被清晰分开。ROC 曲线和 PR 曲线均表现十分出色，说明模型拟合效果较好且特征具有较强区分能力。
+
+\section{实验总结}
+本实验中，我掌握了逻辑回归的基本原理、模型训练流程、模型性能评估方法以及可视化决策边界、PR 曲线、ROC 曲线的方法。Iris 前两类数据线性可分，因此逻辑回归模型表现十分优秀。
+
+
+\newpage
+\appendix
+\section{完整代码}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score, roc_curve, auc,
+    precision_recall_curve, f1_score
+)
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+iris = datasets.load_iris()
+X = iris.data[:100, :2]
+y = iris.target[:100]
+
+print("40-60 数据：")
+print(X[40:60], y[40:60])
+
+plt.figure(figsize=(6, 5))
+plt.scatter(X[:50, 0], X[:50, 1], c='red', label="类别 0")
+plt.scatter(X[50:, 0], X[50:, 1], c='blue', label="类别 1")
+plt.xlabel("花萼长")
+plt.ylabel("花萼宽")
+plt.title("Iris 数据集")
+plt.legend()
+plt.show()
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=11
+)
+
+model = LogisticRegression(
+    solver='lbfgs',
+    C=1.0,
+    max_iter=200
+)
+for _ in range(10):
+    model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+y_prob = model.predict_proba(X_test)[:, 1]
+
+acc = accuracy_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+print("测试集准确率：", acc)
+print("F1 值：", f1)
+
+plt.figure(figsize=(6, 5))
+
+x_min, x_max = X[:, 0].min()-1, X[:, 0].max()+1
+y_min, y_max = X[:, 1].min()-1, X[:, 1].max()+1
+xx, yy = np.meshgrid(
+    np.linspace(x_min, x_max, 300),
+    np.linspace(y_min, y_max, 300)
+)
+Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+plt.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.Paired)
+plt.scatter(X[:50, 0], X[:50, 1], c='red')
+plt.scatter(X[50:, 0], X[50:, 1], c='blue')
+plt.title("决策边界")
+plt.xlabel("花萼长")
+plt.ylabel("花萼宽")
+plt.show()
+
+fpr, tpr, _ = roc_curve(y_test, y_prob)
+roc_auc = auc(fpr, tpr)
+plt.figure(figsize=(6, 5))
+plt.plot(fpr, tpr, label="AUC = %.3f" % roc_auc)
+plt.xlabel("假阳性率")
+plt.ylabel("真阳性率")
+plt.title("ROC 曲线")
+plt.legend()
+plt.show()
+
+precision, recall, _ = precision_recall_curve(y_test, y_prob)
+plt.figure(figsize=(6, 5))
+plt.plot(recall, precision)
+plt.xlabel("召回率")
+plt.ylabel("精确率")
+plt.title("精确率-召回率曲线")
+plt.show()
+\end{lstlisting}
+
+\end{document}
